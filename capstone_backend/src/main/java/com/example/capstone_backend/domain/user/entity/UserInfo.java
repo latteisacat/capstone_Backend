@@ -36,16 +36,16 @@ public class UserInfo {
     private String profile;
 
     @Column
-    private Float height;
+    private Double height;
 
     @Column
-    private Float weight;
+    private Double weight;
 
     @Column
-    private Float muscleMass;
+    private Double muscleMass;
 
     @Column
-    private Float fatMass;
+    private Double fatMass;
 
     @CreatedDate
     @Column
