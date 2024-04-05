@@ -1,7 +1,9 @@
 package com.example.capstone_backend.domain.user.entity;
 
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -11,41 +13,25 @@ import java.time.LocalDate;
 
 @Getter
 @Entity
-@Table(name = "user_info")
+@Table(name = "exercise")
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserInfo {
+@NoArgsConstructor
+public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @Column(length = 30)
-    private String email;
+    @Column(length = 20)
+    private String exerciseName;
 
+    @Column
     @NotNull
-    @Column(length = 30)
-    private String name;
-
-    @NotNull
-    @Column
-    private String password;
+    private String record;
 
     @Column
-    private String profile;
-
-    @Column
-    private Double height;
-
-    @Column
-    private Double weight;
-
-    @Column
-    private Double muscleMass;
-
-    @Column
-    private Double fatMass;
+    private String contents;
 
     @CreatedDate
     @Column
@@ -54,4 +40,9 @@ public class UserInfo {
     @LastModifiedDate
     @Column
     private LocalDate updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserInfo user_id;
+
 }
