@@ -17,7 +17,7 @@ public class UserInfoRepositoryTest {
 
     @Test
     public void insertTest(){
-        Double defaultValue = 23.3f;
+        Double defaultValue = 23.3d;
         IntStream.rangeClosed(1, 20).forEach(
                 i -> {
                     UserInfo userInfo = UserInfo.builder()
