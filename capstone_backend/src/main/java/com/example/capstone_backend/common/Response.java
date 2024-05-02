@@ -1,11 +1,11 @@
-package com.example.capstone_backend.domain.utils;
+package com.example.capstone_backend.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
-public class ApiUtils {
+public class Response {
 
     public static <T> ApiResult<T> success(T response) {
         return new ApiResult<>(true, response, null);

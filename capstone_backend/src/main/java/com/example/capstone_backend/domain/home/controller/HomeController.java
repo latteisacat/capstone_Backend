@@ -3,7 +3,7 @@ package com.example.capstone_backend.domain.home.controller;
 
 import com.example.capstone_backend.domain.user.dto.response.UserCompetitorDTO;
 import com.example.capstone_backend.domain.user.dto.response.UserHomeResponseDTO;
-import com.example.capstone_backend.domain.utils.ApiUtils;
+import com.example.capstone_backend.common.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class HomeController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> userHome(@PathVariable("userId") final Integer userId){
-        return ResponseEntity.ok(ApiUtils.success(dummy()));
+        return ResponseEntity.ok(Response.success(dummy()));
     }
 
     private UserHomeResponseDTO dummy(){

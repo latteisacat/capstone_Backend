@@ -7,7 +7,7 @@ import com.example.capstone_backend.domain.user.dto.response.UserBodySpecEditRes
 import com.example.capstone_backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.example.capstone_backend.domain.user.dto.response.UserProfileEditResponseDTO;
 import com.example.capstone_backend.domain.user.dto.response.UserRecordEditResponseDTO;
-import com.example.capstone_backend.domain.utils.ApiUtils;
+import com.example.capstone_backend.common.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,7 @@ public class UserController {
             @PathVariable("userId") final Integer userId,
             @RequestBody final UserBodySpecEditDTO userBodySpecEditDTO
     ){
-        return ResponseEntity.ok(ApiUtils.success(dummyBodySpecEditResponse()));
+        return ResponseEntity.ok(Response.success(dummyBodySpecEditResponse()));
     }
 
     @PostMapping(value="/{userId}/record", consumes={"multipart/form-data"})
@@ -34,7 +34,7 @@ public class UserController {
             @RequestPart("exercise") final UserRecordEditDTO userRecordEditDTO,
             @RequestPart("exerciseVideo") final MultipartFile video
     ){
-        return ResponseEntity.ok(ApiUtils.success(dummyRecordEditResponseDTO()));
+        return ResponseEntity.ok(Response.success(dummyRecordEditResponseDTO()));
     }
 
     @PostMapping(value= "/{userId}/profile", consumes={"multipart/form-data"})
@@ -42,12 +42,12 @@ public class UserController {
             @PathVariable("userId") final Integer userId,
             @RequestPart("profileImage") final MultipartFile profileImage
     ){
-        return ResponseEntity.ok(ApiUtils.success(dummyUserProfileEditResponseDTO()));
+        return ResponseEntity.ok(Response.success(dummyUserProfileEditResponseDTO()));
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> userInfo(@PathVariable("userId") final Integer userId){
-        return ResponseEntity.ok(ApiUtils.success(dummyUserInfoResponseDTO()));
+        return ResponseEntity.ok(Response.success(dummyUserInfoResponseDTO()));
     }
 
     private static UserBodySpecEditResponseDTO dummyBodySpecEditResponse() {
