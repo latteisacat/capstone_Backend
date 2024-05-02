@@ -1,9 +1,10 @@
 package com.example.capstone_backend.domain.user.dto.response;
 
+
 import lombok.Builder;
 
 @Builder
-public record UserBodySpecEditDTO(
+public record UserBodySpecEditResponseDTO(
         Long userId,
         Double height,
         Double weight,
