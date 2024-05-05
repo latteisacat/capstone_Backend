@@ -6,19 +6,16 @@ spring:
     name: capstone_backend
     # H2 Database ??
   datasource:
-    driver-class-name: org.h2.Driver
-    url: 'jdbc:h2:mem:test'   # H2 DB ?? ?? (In-Memory Mode)
-    username: admin        # H2 DB ?? ID (??? ??)
-    password: admin        # H2 DB ?? PW (??? ??)
+    hikari:
+      driver-class-name: org.h2.Driver
+      jdbc-url: jdbc:h2:mem:test  # H2 DB ?? ??
+      username: admin        # H2 DB ?? ID (??? ??)
+      password: admin        # H2 DB ?? PW (??? ??)
 
-  h2:
-      console:
-        enabled: true
-        path: /h2-console
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create        # DB ??? ?? (none, create, create-drop, update, validate)
+      ddl-auto: create-drop       # DB ??? ?? (none, create, create-drop, update, validate)
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
@@ -27,3 +24,6 @@ spring:
   sql:
     init:
       mode: always
+  logging:
+    level:
+      org.hibernate.SQL: debug
