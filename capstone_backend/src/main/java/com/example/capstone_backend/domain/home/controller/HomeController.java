@@ -1,6 +1,7 @@
 package com.example.capstone_backend.domain.home.controller;
 
 
+import com.example.capstone_backend.domain.user.dto.request.UserCompetitorRequestDTO;
 import com.example.capstone_backend.domain.user.dto.response.UserCompetitorDTO;
 import com.example.capstone_backend.domain.user.dto.response.UserHomeResponseDTO;
 import com.example.capstone_backend.common.Response;
@@ -19,6 +20,13 @@ public class HomeController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> userHome(@PathVariable("userId") final Integer userId){
         return ResponseEntity.ok(Response.success(dummy()));
+    }
+
+    @PostMapping("/{userId}/addCompetitor")
+    public ResponseEntity<?> userCompetitorAdd(
+            @PathVariable("userId") final Integer userId,
+            @RequestBody final UserCompetitorRequestDTO userCompetitorRequest){
+        return ResponseEntity.ok(Response.success(null));
     }
 
     private UserHomeResponseDTO dummy(){
