@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record UserRecordEditDTO(
+        Long userId,
         String exerciseName,
         Integer record
 ) {

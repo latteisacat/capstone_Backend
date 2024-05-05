@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record UserBodySpecEditDTO(
+        Long userId,
         Double height,
         Double weight,
         Double muscleMass,
