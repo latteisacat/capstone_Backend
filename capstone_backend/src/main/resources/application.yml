@@ -1,6 +1,7 @@
 server:
   port: 8090
 
+
 spring:
   application:
     name: capstone_backend
@@ -27,3 +28,6 @@ spring:
   sql:
     init:
       mode: always
+
+  jwt:
+    secret: asdfkjiuvlkjwfilzkjofsafemvijdslfgrijsdert
