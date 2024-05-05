@@ -5,6 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record UserCompetitorRequestDTO(
+        Long userId,
         Long competitorId
 ) {
 }
