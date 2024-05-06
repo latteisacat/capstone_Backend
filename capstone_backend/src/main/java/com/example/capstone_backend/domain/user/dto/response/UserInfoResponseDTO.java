@@ -12,6 +12,7 @@ public record UserInfoResponseDTO(
         Double height,
         Double weight,
         Double muscleMass,
+        Double bodyFat,
         Double BMI,
         Double percentageFat,
         String userPercentage,
