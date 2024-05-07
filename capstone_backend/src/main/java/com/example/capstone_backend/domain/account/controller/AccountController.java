@@ -19,15 +19,15 @@ public class AccountController {
     private final AccountService accountService;
 
     //login api
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
-        // accountService.login(loginRequest);
-        return ResponseEntity.ok(Response.success(
-                LoginResponseDTO.builder()
-                .userId(1L)
-                .build()
-        ));
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
+//        // accountService.login(loginRequest);
+//        return ResponseEntity.ok(Response.success(
+//                LoginResponseDTO.builder()
+//                .userId(1L)
+//                .build()
+//        ));
+//    }
 
     //join api
     @PostMapping("/join")
