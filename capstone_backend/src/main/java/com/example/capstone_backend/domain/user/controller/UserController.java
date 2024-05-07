@@ -32,7 +32,7 @@ public class UserController {
     public ResponseEntity<?> userRecordEdit(
             @PathVariable("userId") final Integer userId,
             @RequestPart("exercise") final UserRecordEditDTO userRecordEditDTO,
-            @RequestPart("exerciseVideo") final MultipartFile video
+            @RequestPart(value="exerciseVideo", required = true) final MultipartFile video
     ){
         return ResponseEntity.ok(Response.success(dummyRecordEditResponseDTO()));
     }
