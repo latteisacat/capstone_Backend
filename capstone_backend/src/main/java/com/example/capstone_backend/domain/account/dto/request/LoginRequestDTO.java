@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record LoginRequestDTO(
-        String id,
+        String email,
         String password
 ) {
 }
