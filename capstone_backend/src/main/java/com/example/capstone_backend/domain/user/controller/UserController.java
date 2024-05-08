@@ -3,12 +3,11 @@ package com.example.capstone_backend.domain.user.controller;
 
 import com.example.capstone_backend.domain.user.dto.request.UserBodySpecEditDTO;
 import com.example.capstone_backend.domain.user.dto.request.UserRecordEditDTO;
-import com.example.capstone_backend.domain.user.dto.response.UserBodySpecEditResponseDTO;
-import com.example.capstone_backend.domain.user.dto.response.UserInfoResponseDTO;
-import com.example.capstone_backend.domain.user.dto.response.UserProfileEditResponseDTO;
-import com.example.capstone_backend.domain.user.dto.response.UserRecordEditResponseDTO;
+import com.example.capstone_backend.domain.user.dto.response.*;
 import com.example.capstone_backend.common.Response;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +44,14 @@ public class UserController {
         return ResponseEntity.ok(Response.success(dummyUserProfileEditResponseDTO()));
     }
 
+    @GetMapping(value= "/{userId}/profile")
+    public ResponseEntity<?> userProfile(
+            @PathVariable("userId") final Integer userId,
+            @PageableDefault final Pageable pageable
+    ){
+        return ResponseEntity.ok(Response.success(dummyUserProfileRequestResponseDTO()));
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<?> userInfo(@PathVariable("userId") final Integer userId){
         return ResponseEntity.ok(Response.success(dummyUserInfoResponseDTO()));
@@ -63,7 +70,6 @@ public class UserController {
                 .build();
         return userBodySpecEditResponseDTO;
     }
-
 
 
     private static UserRecordEditResponseDTO dummyRecordEditResponseDTO(){
@@ -141,4 +147,31 @@ public class UserController {
                 .build();
     }
 
+    private static UserProfileRequestResponseDTO dummyUserProfileRequestResponseDTO(){
+        List<UserProfileRequestResponseDTO.userContents> userContents = new ArrayList<>();
+        userContents.add(UserProfileRequestResponseDTO.userContents.builder()
+                .address("asdfasdf.asdfasdf.dsf")
+                .contentId(1L)
+                .contentType("image")
+                .thumbnail("/image/asdf.jpg")
+                .build());
+        userContents.add(UserProfileRequestResponseDTO.userContents.builder()
+                .address("asdfasdf.asdfasdf.dsf")
+                .contentId(2L)
+                .contentType("video")
+                .thumbnail("/image/asdf.mp4")
+                .build());
+        userContents.add(UserProfileRequestResponseDTO.userContents.builder()
+                .address("asdfasdf.asdfasdf.dsf")
+                .contentId(3L)
+                .contentType("video")
+                .thumbnail("/image/asdf.avi")
+                .build());
+        return UserProfileRequestResponseDTO.builder()
+                .profileImage("/image/asdfasdf.jpg")
+                .userId(1L)
+                .userContents(userContents)
+                .hasNext(false)
+                .build();
+    }
 }
