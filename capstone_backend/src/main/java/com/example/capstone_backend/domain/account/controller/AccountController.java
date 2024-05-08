@@ -3,6 +3,7 @@ package com.example.capstone_backend.domain.account.controller;
 import com.example.capstone_backend.domain.account.dto.request.JoinRequestDTO;
 import com.example.capstone_backend.domain.account.dto.request.LoginRequestDTO;
 import com.example.capstone_backend.common.Response;
+import com.example.capstone_backend.domain.account.dto.response.LoginResponseDTO;
 import com.example.capstone_backend.domain.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
     private final AccountService accountService;
 
-//    //login api
+    //login api
 //    @PostMapping("/login")
 //    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
-//        accountService.login(loginRequest);
-//        return ResponseEntity.ok(Response.success(null));
+//        // accountService.login(loginRequest);
+//        return ResponseEntity.ok(Response.success(
+//                LoginResponseDTO.builder()
+//                .userId(1L)
+//                .build()
+//        ));
 //    }
 
     //join api
