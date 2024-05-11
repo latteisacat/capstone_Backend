@@ -20,8 +20,8 @@ public class AccountService {
     public void join(JoinRequestDTO joinRequestDTO) {
         userInfoRepository.save(UserInfo.builder()
                 .email(joinRequestDTO.email())
-                .name(joinRequestDTO.name())
-                .password(bCryptPasswordEncoder.encode(joinRequestDTO.password()))
+                .userName(joinRequestDTO.name())
+                .userPassword(bCryptPasswordEncoder.encode(joinRequestDTO.password()))
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalDate.now())
                 .build());
