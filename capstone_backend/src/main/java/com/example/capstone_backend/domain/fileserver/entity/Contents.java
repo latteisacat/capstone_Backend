@@ -30,6 +30,9 @@ public class Contents {
     @Column
     private String datatype;
 
+    @Column
+    private String thumbnail;
+
     @CreatedDate
     @Column
     private LocalDate createdAt;

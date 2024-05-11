@@ -74,3 +74,4 @@ tasks.named('asciidoctor') {
 	dependsOn test
 }
 
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
