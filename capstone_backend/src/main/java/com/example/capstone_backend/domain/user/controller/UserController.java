@@ -5,6 +5,7 @@ import com.example.capstone_backend.domain.user.dto.request.UserBodySpecEditDTO;
 import com.example.capstone_backend.domain.user.dto.request.UserRecordEditDTO;
 import com.example.capstone_backend.domain.user.dto.response.*;
 import com.example.capstone_backend.common.Response;
+import com.example.capstone_backend.domain.user.service.UserReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -19,6 +20,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    private final UserReadService userReadService;
     @PostMapping("/{userId}/modify")
     public ResponseEntity<?> userBodySpecEdit(
             @PathVariable("userId") final Integer userId,
@@ -49,6 +52,7 @@ public class UserController {
             @PathVariable("userId") final Integer userId,
             @PageableDefault final Pageable pageable
     ){
+        userReadService.getUserProfileRequest(1L, pageable);
         return ResponseEntity.ok(Response.success(dummyUserProfileRequestResponseDTO()));
     }
 
@@ -148,20 +152,20 @@ public class UserController {
     }
 
     private static UserProfileRequestResponseDTO dummyUserProfileRequestResponseDTO(){
-        List<UserProfileRequestResponseDTO.userContents> userContents = new ArrayList<>();
-        userContents.add(UserProfileRequestResponseDTO.userContents.builder()
+        List<UserProfileRequestResponseDTO.UserContents> userContents = new ArrayList<>();
+        userContents.add(UserProfileRequestResponseDTO.UserContents.builder()
                 .address("asdfasdf.asdfasdf.dsf")
                 .contentId(1L)
                 .contentType("image")
                 .thumbnail("/image/asdf.jpg")
                 .build());
-        userContents.add(UserProfileRequestResponseDTO.userContents.builder()
+        userContents.add(UserProfileRequestResponseDTO.UserContents.builder()
                 .address("asdfasdf.asdfasdf.dsf")
                 .contentId(2L)
                 .contentType("video")
                 .thumbnail("/image/asdf.mp4")
                 .build());
-        userContents.add(UserProfileRequestResponseDTO.userContents.builder()
+        userContents.add(UserProfileRequestResponseDTO.UserContents.builder()
                 .address("asdfasdf.asdfasdf.dsf")
                 .contentId(3L)
                 .contentType("video")
