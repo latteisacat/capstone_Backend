@@ -1,6 +1,7 @@
 package com.example.capstone_backend.common.config;
 
 
+import com.example.capstone_backend.common.jwt.JWTFilter;
 import com.example.capstone_backend.common.jwt.JWTUtil;
 import com.example.capstone_backend.common.jwt.LoginFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +50,8 @@ public class SpringSecurityConfig {
         http.httpBasic((auth) -> auth.disable());
 
         //custom filter
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, new ObjectMapper()), UsernamePasswordAuthenticationFilter.class);
 
         //h2
@@ -56,9 +59,11 @@ public class SpringSecurityConfig {
 
         //authorization setting per path
         http.authorizeHttpRequests(
+//                (auth) -> auth
+//                        .requestMatchers(new AntPathRequestMatcher("/"), new AntPathRequestMatcher("/login"), new AntPathRequestMatcher("/join"), new AntPathRequestMatcher("/h2-console/**")).permitAll()
+//                        .anyRequest().authenticated()
                 (auth) -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/"), new AntPathRequestMatcher("/login"), new AntPathRequestMatcher("/join"), new AntPathRequestMatcher("/h2-console/**")).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
 
         );
 
