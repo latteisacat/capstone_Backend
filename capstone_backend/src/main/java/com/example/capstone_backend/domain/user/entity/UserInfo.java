@@ -26,14 +26,14 @@ public class UserInfo {
 
     @NotNull
     @Column(length = 30)
-    private String name;
+    private String userName;
 
     @NotNull
     @Column
-    private String password;
+    private String userPassword;
 
     @Column
-    private String profile;
+    private String userProfile;
 
     @Column
     private Double height;

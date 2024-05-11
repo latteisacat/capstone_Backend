@@ -22,7 +22,7 @@ public class Comments {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="shortform_id")
-    private Shortform shortformId;
+    private Contents shortformId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
