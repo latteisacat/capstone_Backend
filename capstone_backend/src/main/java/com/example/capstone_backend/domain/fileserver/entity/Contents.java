@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Shortform {
+public class Contents {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +26,9 @@ public class Shortform {
 
     @Column
     private String contents;
+
+    @Column
+    private String datatype;
 
     @CreatedDate
     @Column

@@ -19,12 +19,12 @@ public class Competitor {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from")
-    private UserInfo from;
+    @JoinColumn(name = "from_user_id")
+    private UserInfo fromUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to")
-    private UserInfo to;
+    @JoinColumn(name = "to_user_id")
+    private UserInfo toUserId;
 
 
 

@@ -43,6 +43,6 @@ public class Exercise {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserInfo user_id;
+    private UserInfo userId;
 
 }
