@@ -51,7 +51,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String email = jwtUtil.getUsername(token);
         String password = "temp";
 
-        UserInfo userInfo = UserInfo.builder().email(email).password(password).build();
+        UserInfo userInfo = UserInfo.builder().email(email).userPassword(password).build();
 
         //UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(userInfo);
