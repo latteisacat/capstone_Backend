@@ -28,7 +28,7 @@ public class HomeController {
         List<List<UserCompetitorDTO.CompareDetail>> compareDetails = new ArrayList<>();
         List<UserHomeResponseDTO.UserRecord> userRecords = new ArrayList<>();
         List<UserHomeResponseDTO.RecommendedUser> recommendedUsers = new ArrayList<>();
-
+        List<UserHomeResponseDTO.AverageRecord> averageRecords = new ArrayList<>();
         for(int i = 0; i < 6; i++){
             compareDetails.add(new ArrayList<UserCompetitorDTO.CompareDetail>());
         }
@@ -142,6 +142,21 @@ public class HomeController {
                 .weight(69.0)
                 .build());
 
+        averageRecords.add(UserHomeResponseDTO.AverageRecord.builder()
+                .name("데드리프트")
+                .me("160kg")
+                .competitor("130kg")
+                .build());
+        averageRecords.add(UserHomeResponseDTO.AverageRecord.builder()
+                .name("벤치프레스")
+                .me("100kg")
+                .competitor("90kg")
+                .build());
+        averageRecords.add(UserHomeResponseDTO.AverageRecord.builder()
+                .name("스쿼트")
+                .me("130kg")
+                .competitor("110kg")
+                .build());
 
         userHomeResponseDTO = UserHomeResponseDTO.builder()
                 .userId(234l)
@@ -155,6 +170,7 @@ public class HomeController {
                 .userPercentage("20%")
                 .competitors(competitors)
                 .userRecords(userRecords)
+                .graph(averageRecords)
                 .recommendedUsers(recommendedUsers)
                 .build();
         return userHomeResponseDTO;
