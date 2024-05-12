@@ -22,8 +22,9 @@ public class UserInfoRepositoryTest {
                 i -> {
                     UserInfo userInfo = UserInfo.builder()
                             .email("qwer")
-                            .name("kkf")
-                            .password("23984")
+                            .userName("kkf")
+                            .userPassword("23984")
+                            .userProfile("profile")
                             .height(defaultValue + i)
                             .weight(defaultValue + i)
                             .muscleMass(defaultValue + i)
