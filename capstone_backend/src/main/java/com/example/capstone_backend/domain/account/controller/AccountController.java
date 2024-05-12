@@ -6,6 +6,7 @@ import com.example.capstone_backend.common.Response;
 import com.example.capstone_backend.domain.account.dto.response.LoginResponseDTO;
 import com.example.capstone_backend.domain.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +33,12 @@ public class AccountController {
     //join api
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody JoinRequestDTO joinRequest) {
-        accountService.join(joinRequest);
-        return ResponseEntity.ok(Response.success("가입 성공"));
+        if(accountService.checkEmail(joinRequest.email())) {
+            accountService.join(joinRequest);
+            return ResponseEntity.ok(Response.success("가입 성공"));
+        }
+        else {
+            return ResponseEntity.ok(Response.error("이미 존재하는 이메일", HttpStatus.BAD_REQUEST));
+        }
     }
 }

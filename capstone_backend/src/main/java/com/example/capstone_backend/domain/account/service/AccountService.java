@@ -26,5 +26,12 @@ public class AccountService {
                 .updatedAt(LocalDate.now())
                 .build());
     }
+    public boolean checkEmail(String email){
+        boolean result = false;
+        if(userInfoRepository.findByEmail(email) == null){
+            result = true;
+        }
+        return result;
+    }
 
 }

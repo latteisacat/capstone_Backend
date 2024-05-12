@@ -1,3 +1,5 @@
+# intellij .gitignore
+application-*
 HELP.md
 .gradle
 build/
