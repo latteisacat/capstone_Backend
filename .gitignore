@@ -57,6 +57,7 @@ $RECYCLE.BIN/
 
 # intellij .gitignore
 application-*
+application-*.*
 HELP.md
 .gradle
 build/
