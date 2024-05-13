@@ -1,5 +1,7 @@
 package com.example.capstone_backend.domain.community.dto.response;
 
+import com.example.capstone_backend.domain.fileserver.entity.Comments;
+import com.example.capstone_backend.domain.fileserver.entity.Contents;
 import lombok.Builder;
 
 import java.util.List;
@@ -11,7 +13,7 @@ public record ContentResponseDTO(
         String text,
         String content,
         List<UserComment> comments,
-        Boolean hasNext
+        String thumbnail
 
 ) {
     @Builder
@@ -21,5 +23,23 @@ public record ContentResponseDTO(
             String profileImage,
             String comment
     ) {
+        public static UserComment of(final Comments comments) {
+            return UserComment.builder()
+                    .commentId(comments.getId())
+                    .userId(comments.getUserId().getId())
+                    .profileImage(comments.getUserId().getUserProfile())
+                    .comment(comments.getComments())
+                    .build();
+        }
+    }
+    public static ContentResponseDTO of(final Contents contents, final List<Comments> comments){
+        return ContentResponseDTO.builder()
+                .profileImage(contents.getUserId().getUserProfile())
+                .userId(contents.getUserId().getId())
+                .text(contents.getContentText())
+                .content(contents.getContents())
+                .thumbnail(contents.getThumbnail())
+                .comments(comments.stream().map(UserComment::of).toList())
+                .build();
     }
 }

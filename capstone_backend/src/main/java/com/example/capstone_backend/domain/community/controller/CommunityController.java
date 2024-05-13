@@ -5,6 +5,7 @@ import com.example.capstone_backend.common.Response;
 import com.example.capstone_backend.domain.community.dto.request.ContentUploadRequestDTO;
 import com.example.capstone_backend.domain.community.dto.response.CommunityResponseDTO;
 import com.example.capstone_backend.domain.community.dto.response.ContentResponseDTO;
+import com.example.capstone_backend.domain.community.service.CommunityReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -19,8 +20,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/community")
 public class CommunityController {
+
+    final private CommunityReadService communityReadService;
+
     @GetMapping("")
     public ResponseEntity<?> community(@PageableDefault final Pageable pageable){
+        communityReadService.getCommunityContents(pageable);
         return ResponseEntity.ok(Response.success(dummyCommunityResponseDTO()));
     }
 
@@ -41,8 +46,8 @@ public class CommunityController {
     }
     @GetMapping("/{contentId}")
     public ResponseEntity<?> communityContent(
-            @PathVariable final Long contentId,
-            @PageableDefault final Pageable pageable) {
+            @PathVariable final Long contentId) {
+        communityReadService.getContent(contentId);
         return ResponseEntity.ok(Response.success(dummyCommunityContentResponseDTO()));
     }
 
@@ -61,8 +66,8 @@ public class CommunityController {
                 .userId(1L)
                 .text("text")
                 .content("content")
+                .thumbnail("content.asdf.asdf")
                 .comments(comments)
-                .hasNext(false)
                 .build();
     }
 

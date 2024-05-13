@@ -34,7 +34,7 @@ public class UserController {
     public ResponseEntity<?> userRecordEdit(
             @PathVariable("userId") final Integer userId,
             @RequestPart("exercise") final UserRecordEditDTO userRecordEditDTO,
-            @RequestPart("exerciseVideo") final MultipartFile video
+            @RequestPart(value = "exerciseVideo", required = false) final MultipartFile video
     ){
         return ResponseEntity.ok(Response.success(dummyRecordEditResponseDTO()));
     }
@@ -49,13 +49,13 @@ public class UserController {
 
     @GetMapping(value= "/{userId}/profile")
     public ResponseEntity<?> userProfile(
-            @PathVariable("userId") final Integer userId,
-            @PageableDefault final Pageable pageable
+            @PathVariable("userId") final Integer userId
     ){
-        userReadService.getUserProfileRequest(1L, pageable);
+        userReadService.getUserProfileRequest(1L);
         return ResponseEntity.ok(Response.success(dummyUserProfileRequestResponseDTO()));
     }
 
+    //TODO: 해당 api는 안쓸듯..?
     @GetMapping("/{userId}")
     public ResponseEntity<?> userInfo(@PathVariable("userId") final Integer userId){
         return ResponseEntity.ok(Response.success(dummyUserInfoResponseDTO()));
@@ -175,7 +175,6 @@ public class UserController {
                 .profileImage("/image/asdfasdf.jpg")
                 .userId(1L)
                 .userContents(userContents)
-                .hasNext(false)
                 .build();
     }
 }

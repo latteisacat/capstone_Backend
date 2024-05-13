@@ -28,6 +28,9 @@ public class Contents {
     private String contents;
 
     @Column
+    private String contentText;
+
+    @Column
     private String datatype;
 
     @Column

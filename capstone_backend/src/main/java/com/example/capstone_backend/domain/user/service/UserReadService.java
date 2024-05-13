@@ -12,6 +12,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -20,9 +22,9 @@ public class UserReadService {
     private final UserInfoRepository userInfoRepository;
     private final ContentsRepository contentsRepository;
 
-    public UserProfileRequestResponseDTO getUserProfileRequest(final Long userId, final Pageable pageable){
-        Slice<Contents> userContents = contentsRepository.findSliceByUserId(userId, pageable);
+    public UserProfileRequestResponseDTO getUserProfileRequest(final Long userId){
         UserInfo user = userInfoRepository.findById(userId).orElseThrow();
+        List<Contents> userContents = contentsRepository.findAllByUserId(user);
         return UserProfileRequestResponseDTO.of(
                 user.getUserProfile(),
                 user.getId(),

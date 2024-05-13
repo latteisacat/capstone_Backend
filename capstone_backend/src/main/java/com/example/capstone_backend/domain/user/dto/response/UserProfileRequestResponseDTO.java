@@ -11,8 +11,7 @@ import java.util.List;
 public record UserProfileRequestResponseDTO(
         String profileImage,
         Long userId,
-        List<UserContents> userContents,
-        Boolean hasNext
+        List<UserContents> userContents
 
 ) {
     @Builder
@@ -35,13 +34,13 @@ public record UserProfileRequestResponseDTO(
     public static UserProfileRequestResponseDTO of(
             final String profileImage,
             final Long userId,
-            final Slice<Contents> userContents
+            final List<Contents> userContents
     ) {
         return new UserProfileRequestResponseDTO(
                 profileImage,
                 userId,
-                userContents.getContent().stream().map(UserContents::of).toList(),
-                userContents.hasNext());
+                userContents.stream().map(UserContents::of).toList()
+        );
     }
 
 }
