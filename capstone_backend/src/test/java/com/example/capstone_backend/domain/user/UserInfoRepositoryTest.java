@@ -31,12 +31,13 @@ public class UserInfoRepositoryTest {
                             .muscleMass(defaultValue + i)
                             .fatMass(defaultValue + i)
                             .bodyScore(defaultValue + i)
+                            .sex("남")
                             .build();
                     userInfoRepository.save(userInfo);
                 }
         );
-        System.out.println(userInfoRepository.userCount());
-        System.out.println(userInfoRepository.getBetterBodyScoreUser(30.0d));
-        System.out.println(userInfoRepository.getRecommendedUsers(25.0d));
+        System.out.println(userInfoRepository.userCount("남"));
+        System.out.println(userInfoRepository.getBetterBodyScoreUser(30.0d, "남"));
+        System.out.println(userInfoRepository.getRecommendedUsers(25.0d, "남"));
     }
 }

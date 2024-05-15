@@ -30,17 +30,19 @@ public class HomeReadService {
         List<Competitor> myCompetitors = competitorRepository.findAllByFromUserId(user);
         List<Exercise> myExerciseList = exerciseRepository.findAllByUser(user);
 
-        Long userCount = userInfoRepository.userCount();
+        String sex = user.getSex();
+
+        Long userCount = userInfoRepository.userCount(sex);
         Double percentageFat = user.getFatMass() / user.getWeight() * 100;
-        Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUser(user.getBodyScore());
+        Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUser(user.getBodyScore(), sex);
         Double userPercentage = (double) betterBodyScoreUserCount / userCount * 100;
 
-        List<UserHomeResponseDTO.UserRecord> userRecords = getUserRecords(myExerciseList);
+        List<UserHomeResponseDTO.UserRecord> userRecords = getUserRecords(myExerciseList, sex);
 
-        List<UserHomeResponseDTO.AverageRecord> averageRecords = getAverageRecord(myExerciseList);
+        List<UserHomeResponseDTO.AverageRecord> averageRecords = getAverageRecord(myExerciseList, sex);
 
         List<UserHomeResponseDTO.RecommendedUser> recommendedUsers =
-                userInfoRepository.getRecommendedUsers(user.getBodyScore())
+                userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex)
                         .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
 
         List<UserCompetitorDTO> userCompetitorDTOList = getUserCompetitorDTOList(user, myCompetitors);
@@ -48,6 +50,7 @@ public class HomeReadService {
         return UserHomeResponseDTO.builder()
                 .userId(user.getId())
                 .name(user.getUserName())
+                .sex(user.getSex())
                 .profile(user.getUserProfile())
                 .height(user.getHeight())
                 .weight(user.getWeight())
@@ -84,10 +87,10 @@ public class HomeReadService {
         return userCompetitorDTOList;
     }
 
-    private List<UserHomeResponseDTO.AverageRecord> getAverageRecord(List<Exercise> myExerciseList) {
+    private List<UserHomeResponseDTO.AverageRecord> getAverageRecord(List<Exercise> myExerciseList, String sex) {
         List<UserHomeResponseDTO.AverageRecord> averageRecords = new ArrayList<>();
         for(Exercise myExercise : myExerciseList){
-            Double averageRecord = exerciseRepository.getAverageRecord(myExercise.getExerciseName());
+            Double averageRecord = exerciseRepository.getAverageRecord(myExercise.getExerciseName(), sex);
             averageRecords.add(UserHomeResponseDTO.AverageRecord.builder()
                     .name(myExercise.getExerciseName())
                     .me(myExercise.getRecord().toString() + "kg")
@@ -97,12 +100,12 @@ public class HomeReadService {
         return averageRecords;
     }
 
-    private List<UserHomeResponseDTO.UserRecord> getUserRecords(List<Exercise> myExerciseList) {
+    private List<UserHomeResponseDTO.UserRecord> getUserRecords(List<Exercise> myExerciseList, String sex) {
         // 유저기록을 퍼센트로 쪼개주는 메소드
         List<UserHomeResponseDTO.UserRecord> userRecords = new ArrayList<>();
         for(Exercise exercise : myExerciseList){
-            Long betterExerciseUserCount = exerciseRepository.getBetterExerciseUser(exercise.getExerciseName(), exercise.getRecord());
-            Long exerciseUserCount = exerciseRepository.getExerciseUser(exercise.getExerciseName());
+            Long betterExerciseUserCount = exerciseRepository.getBetterExerciseUser(exercise.getExerciseName(), exercise.getRecord(), sex);
+            Long exerciseUserCount = exerciseRepository.getExerciseUser(exercise.getExerciseName(), sex);
             Double exercisePercentage = (double) betterExerciseUserCount / exerciseUserCount * 100;
             userRecords.add(UserHomeResponseDTO.UserRecord.builder()
                             .sportName(exercise.getExerciseName())

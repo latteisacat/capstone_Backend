@@ -11,17 +11,17 @@ import java.util.List;
 public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
     UserInfo findByEmail(String email);
 
-    @Query("select count(u) from UserInfo u")
-    Long userCount();
+    @Query("select count(u) from UserInfo u" + " where u.sex = :sex")
+    Long userCount(String sex);
 
     @Query("select count(*) from UserInfo u" +
-            " where u.bodyScore > :bodyScore"
+            " where u.bodyScore > :bodyScore and u.sex = :sex"
     )
-    Long getBetterBodyScoreUser(Double bodyScore);
+    Long getBetterBodyScoreUser(Double bodyScore, String sex);
 
 
     @Query("select u from UserInfo u" +
-            " where  :bodyScore*0.85 < u.bodyScore and u.bodyScore < :bodyScore*1.15"
+            " where  :bodyScore*0.85 < u.bodyScore and u.bodyScore < :bodyScore*1.15 and u.sex = :sex"
     )
-    List<UserInfo> getRecommendedUsers(Double bodyScore);
+    List<UserInfo> getRecommendedUsers(Double bodyScore, String sex);
 }

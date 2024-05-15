@@ -20,19 +20,20 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     @Query(
             "select count(*) from Exercise e" +
+            " join fetch e.userId " +
             " where e.exerciseName = :exerciseName" +
-            " and e.record > :record"
+            " and e.record > :record and e.userId.sex = :sex"
     )
-    Long getBetterExerciseUser(String exerciseName, Double record);
+    Long getBetterExerciseUser(String exerciseName, Double record, String sex);
 
     @Query(
             "select count(*) from Exercise e" +
-            " where e.exerciseName = :exerciseName"
+            " where e.exerciseName = :exerciseName and e.userId.sex = :sex"
     )
-    Long getExerciseUser(String exerciseName);
+    Long getExerciseUser(String exerciseName, String sex);
 
     @Query(
             "select avg(e.record) from Exercise e" +
-            " where e.exerciseName = :exerciseName")
-    Double getAverageRecord(String exerciseName);
+            " where e.exerciseName = :exerciseName and e.userId.sex = :sex")
+    Double getAverageRecord(String exerciseName, String sex);
 }

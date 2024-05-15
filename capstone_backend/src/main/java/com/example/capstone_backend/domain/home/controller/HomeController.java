@@ -172,6 +172,7 @@ public class HomeController {
                 .bodyFat(9.5)
                 .percentageFat(14.5)
                 .userPercentage("20%")
+                .sex("남")
                 .competitors(competitors)
                 .userRecords(userRecords)
                 .graph(averageRecords)

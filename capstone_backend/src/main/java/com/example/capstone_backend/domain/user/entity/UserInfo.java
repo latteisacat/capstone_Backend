@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
+@Setter
 @Entity
 @Table(
         name = "user_info",
@@ -57,6 +58,9 @@ public class UserInfo {
 
     @Column(name="bmi")
     private Double BMI;
+
+    @Column
+    private String sex;
 
     @CreatedDate
     @Column

@@ -10,6 +10,7 @@ import java.util.List;
 public record UserHomeResponseDTO(
         Long userId,
         String name,
+        String sex,
         String profile,
         Double height,
         Double weight,

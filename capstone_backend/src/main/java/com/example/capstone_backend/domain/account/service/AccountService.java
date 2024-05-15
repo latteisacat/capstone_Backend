@@ -22,6 +22,7 @@ public class AccountService {
                 .email(joinRequestDTO.email())
                 .userName(joinRequestDTO.name())
                 .userPassword(bCryptPasswordEncoder.encode(joinRequestDTO.password()))
+                .sex(joinRequestDTO.sex())
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalDate.now())
                 .build());
