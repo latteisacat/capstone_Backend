@@ -28,7 +28,7 @@ public class Exercise {
 
     @Column
     @NotNull
-    private String record;
+    private Double record;
 
     @Column
     private String contents;

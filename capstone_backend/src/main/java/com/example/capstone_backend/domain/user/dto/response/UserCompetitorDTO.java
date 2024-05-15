@@ -18,6 +18,12 @@ public record UserCompetitorDTO(
             Double me,
             Double competitor
     ){
-
+        public static List<CompareDetail> of(String name, Double me, Double competitor){
+            return List.of(CompareDetail.builder()
+                    .name(name)
+                    .me(me)
+                    .competitor(competitor)
+                    .build());
+        }
     }
 }

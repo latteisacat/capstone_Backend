@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.sql.SQLOutput;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +22,7 @@ public class UserInfoRepositoryTest {
         IntStream.rangeClosed(1, 20).forEach(
                 i -> {
                     UserInfo userInfo = UserInfo.builder()
-                            .email("qwer")
+                            .email("qwer" + i)
                             .userName("kkf")
                             .userPassword("23984")
                             .userProfile("profile")
@@ -29,9 +30,13 @@ public class UserInfoRepositoryTest {
                             .weight(defaultValue + i)
                             .muscleMass(defaultValue + i)
                             .fatMass(defaultValue + i)
+                            .bodyScore(defaultValue + i)
                             .build();
                     userInfoRepository.save(userInfo);
                 }
         );
+        System.out.println(userInfoRepository.userCount());
+        System.out.println(userInfoRepository.getBetterBodyScoreUser(30.0d));
+        System.out.println(userInfoRepository.getRecommendedUsers(25.0d));
     }
 }

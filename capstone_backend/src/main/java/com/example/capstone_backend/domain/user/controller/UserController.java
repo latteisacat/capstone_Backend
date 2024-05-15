@@ -51,7 +51,7 @@ public class UserController {
     public ResponseEntity<?> userProfile(
             @PathVariable("userId") final Integer userId
     ){
-        userReadService.getUserProfileRequest(1L);
+        userReadService.getUserProfileRequest((long)userId);
         return ResponseEntity.ok(Response.success(dummyUserProfileRequestResponseDTO()));
     }
 

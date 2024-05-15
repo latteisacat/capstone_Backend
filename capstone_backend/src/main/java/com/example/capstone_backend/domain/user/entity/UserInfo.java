@@ -11,7 +11,12 @@ import java.time.LocalDate;
 
 @Getter
 @Entity
-@Table(name = "user_info")
+@Table(
+        name = "user_info",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "email")
+        }
+)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,6 +51,12 @@ public class UserInfo {
 
     @Column
     private Double fatMass;
+
+    @Column
+    private Double bodyScore;
+
+    @Column(name="bmi")
+    private Double BMI;
 
     @CreatedDate
     @Column
