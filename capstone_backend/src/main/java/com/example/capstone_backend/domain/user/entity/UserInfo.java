@@ -3,11 +3,13 @@ package com.example.capstone_backend.domain.user.entity;
 
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.lang.management.ThreadInfo;
 import java.time.LocalDate;
 
 @Getter
@@ -64,8 +66,9 @@ public class UserInfo {
     private String sex;
 
     @Column(name="is_dummy")
-    @ColumnDefault("false")
-    private Boolean isDummy;
+    @Builder.Default
+    @NotNull
+    private Boolean isDummy = false;
 
     @CreatedDate
     @Column

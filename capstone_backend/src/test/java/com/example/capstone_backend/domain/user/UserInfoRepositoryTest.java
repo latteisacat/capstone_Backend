@@ -1,6 +1,8 @@
 package com.example.capstone_backend.domain.user;
 
+import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,8 +14,8 @@ public class UserInfoRepositoryTest {
     @Autowired
     UserInfoRepository userInfoRepository;
 
-    @Test
-    public void insertTest(){
+    @BeforeEach
+    void setUp(){
         Double defaultValue = 23.3d;
         IntStream.rangeClosed(1, 20).forEach(
                 i -> {
@@ -27,13 +29,17 @@ public class UserInfoRepositoryTest {
                             .muscleMass(defaultValue + i)
                             .fatMass(defaultValue + i)
                             .bodyScore(defaultValue + i)
+                            .BMI(defaultValue + i)
                             .sex("남")
                             .build();
                     userInfoRepository.save(userInfo);
                 }
         );
+    }
+    @Test
+    public void insertTest(){
         System.out.println(userInfoRepository.userCount("남"));
         System.out.println(userInfoRepository.getBetterBodyScoreUserCount(30.0d, "남"));
-        System.out.println(userInfoRepository.getRecommendedUsers(25.0d, "남"));
+        System.out.println(userInfoRepository.getRecommendedUsers(28.0d, "남").get(0).getUserName());
     }
 }
