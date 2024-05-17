@@ -1,15 +1,11 @@
 package com.example.capstone_backend.domain.user;
 
 import com.example.capstone_backend.domain.user.entity.UserInfo;
-import org.apache.catalina.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.sql.SQLOutput;
 import java.util.stream.IntStream;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class UserInfoRepositoryTest {
@@ -37,7 +33,7 @@ public class UserInfoRepositoryTest {
                 }
         );
         System.out.println(userInfoRepository.userCount("남"));
-        System.out.println(userInfoRepository.getBetterBodyScoreUser(30.0d, "남"));
+        System.out.println(userInfoRepository.getBetterBodyScoreUserCount(30.0d, "남"));
         System.out.println(userInfoRepository.getRecommendedUsers(25.0d, "남"));
     }
 }

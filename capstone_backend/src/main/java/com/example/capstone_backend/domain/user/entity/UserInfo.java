@@ -2,6 +2,7 @@ package com.example.capstone_backend.domain.user.entity;
 
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -61,6 +62,10 @@ public class UserInfo {
 
     @Column
     private String sex;
+
+    @Column(name="is_dummy", columnDefinition = "TINYINT(1)")
+    @ColumnDefault("false")
+    private Boolean isDummy;
 
     @CreatedDate
     @Column

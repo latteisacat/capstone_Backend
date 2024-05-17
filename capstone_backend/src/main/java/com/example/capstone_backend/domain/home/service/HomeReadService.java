@@ -34,7 +34,7 @@ public class HomeReadService {
 
         Long userCount = userInfoRepository.userCount(sex);
         Double percentageFat = user.getFatMass() / user.getWeight() * 100;
-        Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUser(user.getBodyScore(), sex);
+        Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUserCount(user.getBodyScore(), sex);
         Double userPercentage = (double) betterBodyScoreUserCount / userCount * 100;
 
         List<UserHomeResponseDTO.UserRecord> userRecords = getUserRecords(myExerciseList, sex);
@@ -104,8 +104,8 @@ public class HomeReadService {
         // 유저기록을 퍼센트로 쪼개주는 메소드
         List<UserHomeResponseDTO.UserRecord> userRecords = new ArrayList<>();
         for(Exercise exercise : myExerciseList){
-            Long betterExerciseUserCount = exerciseRepository.getBetterExerciseUser(exercise.getExerciseName(), exercise.getRecord(), sex);
-            Long exerciseUserCount = exerciseRepository.getExerciseUser(exercise.getExerciseName(), sex);
+            Long betterExerciseUserCount = exerciseRepository.getBetterExerciseUserCount(exercise.getExerciseName(), exercise.getRecord(), sex);
+            Long exerciseUserCount = exerciseRepository.getExerciseUserCount(exercise.getExerciseName(), sex);
             Double exercisePercentage = (double) betterExerciseUserCount / exerciseUserCount * 100;
             userRecords.add(UserHomeResponseDTO.UserRecord.builder()
                             .sportName(exercise.getExerciseName())

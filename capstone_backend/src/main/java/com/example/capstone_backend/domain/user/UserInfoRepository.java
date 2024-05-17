@@ -17,11 +17,12 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
     @Query("select count(*) from UserInfo u" +
             " where u.bodyScore > :bodyScore and u.sex = :sex"
     )
-    Long getBetterBodyScoreUser(Double bodyScore, String sex);
+    Long getBetterBodyScoreUserCount(Double bodyScore, String sex);
 
 
     @Query("select u from UserInfo u" +
             " where  :bodyScore*0.85 < u.bodyScore and u.bodyScore < :bodyScore*1.15 and u.sex = :sex"
+            + " and u.isDummy = false "
     )
     List<UserInfo> getRecommendedUsers(Double bodyScore, String sex);
 }
