@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Table(
         name = "user_info",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "email")
+                @UniqueConstraint(columnNames = {"email"})
         }
 )
 @Builder
@@ -63,7 +63,7 @@ public class UserInfo {
     @Column
     private String sex;
 
-    @Column(name="is_dummy", columnDefinition = "TINYINT(1)")
+    @Column(name="is_dummy")
     @ColumnDefault("false")
     private Boolean isDummy;
 

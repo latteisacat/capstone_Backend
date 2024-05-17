@@ -13,14 +13,14 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
 
     @Query("select e from Exercise e "
-            + " join fetch e.userId"
+            + " join e.userId"
             + " where e.userId = :user")
     List<Exercise> findAllByUser(UserInfo user);
 
 
     @Query(
-            "select count(*) from Exercise e" +
-            " join fetch e.userId " +
+            " select count(*) from Exercise e" +
+            " join e.userId " +
             " where e.exerciseName = :exerciseName" +
             " and e.record > :record and e.userId.sex = :sex"
     )
