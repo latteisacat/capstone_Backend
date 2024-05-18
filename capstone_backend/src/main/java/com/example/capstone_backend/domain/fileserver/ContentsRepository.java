@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,5 +24,5 @@ public interface ContentsRepository extends JpaRepository<Contents, Long> {
             " from Contents c " +
             " where c.userId = :userId "+
             " order by c.createdAt desc ")
-    List<Contents> findAllByUserId(UserInfo userId);
+    List<Contents> findAllByUserId(@Param("userId") UserInfo userId);
 }

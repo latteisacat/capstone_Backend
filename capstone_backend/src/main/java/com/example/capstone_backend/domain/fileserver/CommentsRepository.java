@@ -5,6 +5,7 @@ import com.example.capstone_backend.domain.fileserver.entity.Comments;
 import com.example.capstone_backend.domain.fileserver.entity.Contents;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,5 +19,5 @@ public interface CommentsRepository extends JpaRepository<Comments, Long> {
             " join fetch c.contentId ct "+
             " join fetch c.userId u "+
             " where c.contentId = :contents ")
-    List<Comments> findAllByContents(Contents contents);
+    List<Comments> findAllByContents(@Param("contents")Contents contents);
 }
