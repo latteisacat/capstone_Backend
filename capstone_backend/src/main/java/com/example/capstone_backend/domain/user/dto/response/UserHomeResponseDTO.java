@@ -1,5 +1,7 @@
 package com.example.capstone_backend.domain.user.dto.response;
 
+import com.example.capstone_backend.domain.user.entity.Exercise;
+import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.Builder;
 
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.List;
 public record UserHomeResponseDTO(
         Long userId,
         String name,
+        String sex,
         String profile,
         Double height,
         Double weight,
@@ -25,7 +28,8 @@ public record UserHomeResponseDTO(
             String sportName,
             String record,
             String percentage
-    ){}
+    ){
+    }
 
     @Builder
     public record RecommendedUser(
@@ -34,12 +38,22 @@ public record UserHomeResponseDTO(
             String profile,
             Double height,
             Double weight
-    ){}
+    ){
+        public static RecommendedUser of(UserInfo userInfo){
+            return RecommendedUser.builder()
+                    .userId(userInfo.getId())
+                    .name(userInfo.getUserName())
+                    .profile(userInfo.getUserProfile())
+                    .height(userInfo.getHeight())
+                    .weight(userInfo.getWeight())
+                    .build();
+        }
+    }
 
     @Builder
     public record AverageRecord(
             String name,
             String me,
-            String competitor
+            String average
     ){}
 }

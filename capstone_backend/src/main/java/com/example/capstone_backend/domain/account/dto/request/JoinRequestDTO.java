@@ -7,5 +7,6 @@ import lombok.Builder;
 public record JoinRequestDTO(
         String password,
         String name,
-        String email) {
+        String email,
+        String sex) {
 }

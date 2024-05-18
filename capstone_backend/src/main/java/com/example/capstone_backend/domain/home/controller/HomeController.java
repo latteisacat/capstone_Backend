@@ -1,6 +1,7 @@
 package com.example.capstone_backend.domain.home.controller;
 
 
+import com.example.capstone_backend.domain.home.service.HomeReadService;
 import com.example.capstone_backend.domain.user.dto.response.UserCompetitorDTO;
 import com.example.capstone_backend.domain.user.dto.response.UserHomeResponseDTO;
 import com.example.capstone_backend.common.Response;
@@ -16,8 +17,11 @@ import java.util.List;
 @RequestMapping("/home")
 public class HomeController {
 
+    final private HomeReadService homeReadService;
+
     @GetMapping("/{userId}")
     public ResponseEntity<?> userHome(@PathVariable("userId") final Integer userId){
+        homeReadService.getUserHome((long)userId);
         return ResponseEntity.ok(Response.success(dummy()));
     }
 
@@ -145,17 +149,17 @@ public class HomeController {
         averageRecords.add(UserHomeResponseDTO.AverageRecord.builder()
                 .name("데드리프트")
                 .me("160kg")
-                .competitor("130kg")
+                .average("130kg")
                 .build());
         averageRecords.add(UserHomeResponseDTO.AverageRecord.builder()
                 .name("벤치프레스")
                 .me("100kg")
-                .competitor("90kg")
+                .average("90kg")
                 .build());
         averageRecords.add(UserHomeResponseDTO.AverageRecord.builder()
                 .name("스쿼트")
                 .me("130kg")
-                .competitor("110kg")
+                .average("110kg")
                 .build());
 
         userHomeResponseDTO = UserHomeResponseDTO.builder()
@@ -168,6 +172,7 @@ public class HomeController {
                 .bodyFat(9.5)
                 .percentageFat(14.5)
                 .userPercentage("20%")
+                .sex("남")
                 .competitors(competitors)
                 .userRecords(userRecords)
                 .graph(averageRecords)

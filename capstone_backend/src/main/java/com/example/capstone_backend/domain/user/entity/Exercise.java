@@ -1,9 +1,6 @@
 package com.example.capstone_backend.domain.user.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -12,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "exercise")
 @Builder
@@ -28,7 +26,7 @@ public class Exercise {
 
     @Column
     @NotNull
-    private String record;
+    private Double record;
 
     @Column
     private String contents;
