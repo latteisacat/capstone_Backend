@@ -21,7 +21,7 @@ public class HomeController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> userHome(@PathVariable("userId") final Integer userId){
-        homeReadService.getUserHome((long)userId);
+        // homeReadService.getUserHome((long)userId);
         return ResponseEntity.ok(Response.success(dummy()));
     }
 
