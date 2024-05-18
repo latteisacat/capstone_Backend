@@ -3,6 +3,7 @@ package com.example.capstone_backend.domain.user.dto.response;
 import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 
