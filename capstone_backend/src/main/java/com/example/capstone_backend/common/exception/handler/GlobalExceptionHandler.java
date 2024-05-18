@@ -93,7 +93,6 @@ public class GlobalExceptionHandler {
 
     // INTERNAL SERVER ERROR 500
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ApiResponse(responseCode = "500", description = "예상하지 못한 서버 오류", content = @Content)
     @ExceptionHandler({Exception.class})
     public ResponseEntity<?> internalServerError(final Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Response.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
