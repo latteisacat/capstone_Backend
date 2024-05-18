@@ -25,7 +25,7 @@ public class CommunityController {
 
     @GetMapping("")
     public ResponseEntity<?> community(@PageableDefault final Pageable pageable){
-        communityReadService.getCommunityContents(pageable);
+        // communityReadService.getCommunityContents(pageable);
         return ResponseEntity.ok(Response.success(dummyCommunityResponseDTO()));
     }
 
@@ -47,7 +47,7 @@ public class CommunityController {
     @GetMapping("/{contentId}")
     public ResponseEntity<?> communityContent(
             @PathVariable final Long contentId) {
-        communityReadService.getContent(contentId);
+        //communityReadService.getContent(contentId);
         return ResponseEntity.ok(Response.success(dummyCommunityContentResponseDTO()));
     }
 
