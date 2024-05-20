@@ -40,13 +40,13 @@ public class UserWriteService {
                 .build();
     }
 
-    private Double calculateBodyScore(UserBodySpecEditDTO userBodySpecEditDTO, String sex){
+    public Double calculateBodyScore(UserBodySpecEditDTO userBodySpecEditDTO, String sex){
         Double height = userBodySpecEditDTO.height();
         Double weight = userBodySpecEditDTO.weight();
         Double fatMass = userBodySpecEditDTO.fatMass();
 
         Double FFM = weight - fatMass;
-        Double averageWeight = Math.pow((height/100),2) * 22;
+        Double averageWeight = 0.0;
 
         Double constantFFM = 0.0;
         Double constantFatPercent = 0.0;
@@ -54,10 +54,12 @@ public class UserWriteService {
             if (sex == "남"){
                 constantFFM = 0.85;
                 constantFatPercent = 0.15;
+                averageWeight = Math.pow((height/100),2) * 22;
             }
             else if (sex == "여"){
                 constantFFM = 0.77;
                 constantFatPercent = 0.23;
+                averageWeight = Math.pow((height/100),2) * 21;
             }
             else
                 throw new IllegalArgumentException("성별을 잘못 입력하셨습니다.");
