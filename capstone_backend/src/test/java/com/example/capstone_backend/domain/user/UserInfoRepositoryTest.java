@@ -40,6 +40,6 @@ public class UserInfoRepositoryTest {
     public void insertTest(){
         System.out.println(userInfoRepository.userCount("남"));
         System.out.println(userInfoRepository.getBetterBodyScoreUserCount(30.0d, "남"));
-        System.out.println(userInfoRepository.getRecommendedUsers(28.0d, "남").get(0).getUserName());
+        System.out.println(userInfoRepository.getRecommendedUsers(28.0d, "남", 1l, 0.2).get(0).getUserName());
     }
 }

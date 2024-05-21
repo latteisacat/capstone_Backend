@@ -4,6 +4,7 @@ import com.example.capstone_backend.domain.account.dto.request.JoinRequestDTO;
 import com.example.capstone_backend.domain.account.dto.request.LoginRequestDTO;
 import com.example.capstone_backend.common.Response;
 import com.example.capstone_backend.domain.account.dto.response.LoginResponseDTO;
+import com.example.capstone_backend.domain.account.exception.AlreadyExistEmailException;
 import com.example.capstone_backend.domain.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class AccountController {
             return ResponseEntity.ok(Response.success("가입 성공"));
         }
         else {
-            return ResponseEntity.ok(Response.error("이미 존재하는 이메일", HttpStatus.BAD_REQUEST));
+            throw new AlreadyExistEmailException();
         }
     }
 }

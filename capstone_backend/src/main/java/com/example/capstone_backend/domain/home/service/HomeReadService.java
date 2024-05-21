@@ -30,6 +30,8 @@ public class HomeReadService {
         List<Competitor> myCompetitors = competitorRepository.findAllByFromUserId(user);
         List<Exercise> myExerciseList = exerciseRepository.findAllByUser(user);
 
+        // 이미 등록된 경쟁자를 리스트에서 제외하기 위함.
+        List<Long> competitorIds = myCompetitors.stream().map(competitor -> competitor.getToUserId().getId()).toList();
         String sex = user.getSex();
 
         Long userCount = userInfoRepository.userCount(sex);
@@ -41,9 +43,17 @@ public class HomeReadService {
 
         List<UserHomeResponseDTO.AverageRecord> averageRecords = getAverageRecord(myExerciseList, sex);
 
-        List<UserHomeResponseDTO.RecommendedUser> recommendedUsers =
-                userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex)
-                        .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
+        Double range = 0.15;
+        Integer count = 0;
+        List<UserHomeResponseDTO.RecommendedUser> recommendedUsers;
+        do{
+            count += 1;
+            recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), range)
+                    .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
+            recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
+            System.out.println("사이즈 : " + recommendedUsers.size());
+            range += 0.05;
+        }while(recommendedUsers.size() == 0 ||  count < 5);
 
         List<UserCompetitorDTO> userCompetitorDTOList = getUserCompetitorDTOList(user, myCompetitors);
 
