@@ -1,6 +1,7 @@
 package com.example.capstone_backend.common.config;
 
 
+import com.example.capstone_backend.common.jwt.CustomUserDetailsService;
 import com.example.capstone_backend.common.jwt.JWTFilter;
 import com.example.capstone_backend.common.jwt.JWTUtil;
 import com.example.capstone_backend.common.jwt.LoginFilter;
@@ -32,6 +33,7 @@ import java.util.Collections;
 public class SpringSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -51,7 +53,7 @@ public class SpringSecurityConfig {
 
         //custom filter
         http
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil, customUserDetailsService), LoginFilter.class);
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, new ObjectMapper()), UsernamePasswordAuthenticationFilter.class);
 
         //h2

@@ -1,16 +1,23 @@
 package com.example.capstone_backend.common.jwt;
 
 import com.example.capstone_backend.domain.user.entity.UserInfo;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 
 @RequiredArgsConstructor
+@Getter
 public class CustomUserDetails implements UserDetails {
-    private final UserInfo userInfo;
+    private UserInfo userInfo;
+
+    public CustomUserDetails(UserInfo byEmail) {
+        this.userInfo = byEmail;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
