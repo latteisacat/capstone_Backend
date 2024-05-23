@@ -1,9 +1,9 @@
 package com.example.capstone_backend.domain.user.controller;
 
-
 import com.example.capstone_backend.common.jwt.CustomUserDetails;
 import com.example.capstone_backend.domain.fileserver.service.FileValidator;
 import com.example.capstone_backend.domain.fileserver.service.FileWriteServiceTransactionManager;
+import com.example.capstone_backend.domain.user.UserInfoRepository;
 import com.example.capstone_backend.domain.user.dto.request.UserBodySpecEditDTO;
 import com.example.capstone_backend.domain.user.dto.request.UserRecordEditDTO;
 import com.example.capstone_backend.domain.user.dto.response.*;
@@ -11,6 +11,8 @@ import com.example.capstone_backend.common.Response;
 import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.service.UserReadService;
 import com.example.capstone_backend.domain.user.service.UserWriteService;
+import com.example.capstone_backend.domain.user.util.DummyUserDataCreator;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    // TODO: 나중에 삭제하기
+    private final UserInfoRepository userInfoRepository;
 
     private final UserReadService userReadService;
     private final UserWriteService userWriteService;
@@ -73,6 +78,14 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> userInfo(@PathVariable("userId") final Integer userId){
         return ResponseEntity.ok(Response.success(dummyUserInfoResponseDTO()));
+    }
+
+    // TODO: 나중에 삭제하기
+    @PostMapping("/dummy")
+    public ResponseEntity<?> dummy(){
+        DummyUserDataCreator dummy = new DummyUserDataCreator();
+        dummy.createDummy(userInfoRepository);
+        return ResponseEntity.ok(Response.success("dummy"));
     }
 
     private static UserBodySpecEditResponseDTO dummyBodySpecEditResponse() {
