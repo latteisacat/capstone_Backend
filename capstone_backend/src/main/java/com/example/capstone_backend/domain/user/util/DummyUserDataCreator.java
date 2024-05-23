@@ -18,7 +18,7 @@ public class DummyUserDataCreator {
     final double manFatMassAverage = 22.61;
     final double womanWeightAverage = 59.96;
     final double womanFatMassAverage = 31.52;
-    final double muscleMassAverage = 0.45;
+    final double muscleMassAverage = 45.00;
 
     Random random = new Random();
 
@@ -90,29 +90,41 @@ public class DummyUserDataCreator {
         return femaleDeadScale;
     }
 
-    public void createDummy(UserInfoRepository userInfoRepository) {
-        IntStream.rangeClosed(1, 100).forEach(
+    public static void main(String[] args) {
+        DummyUserDataCreator dummy = new DummyUserDataCreator();
+        Random random = new Random();
+//        double weight = dummy.generateRandomValueWithStdDev(dummy.manWeightAverage, 11, 1);
+////        double weight = Math.round((50 + (140 - 50) * random.nextDouble()) * 10) / 10.0;
+//        double bmi = dummy.generateRandomBMI();
+//        double fatMass = dummy.generateRandomFatMass(weight, "남");
+//        double muscleMass = dummy.generateRandomMuscleMass(weight);
+//        double height = dummy.calculateHeight(bmi, weight);
+//        System.out.println("weight = " + weight);
+//        System.out.println("height = " + height*100);
+//        System.out.println("bmi = " + bmi);
+//        System.out.println("fatMass = " + fatMass);
+//        System.out.println("muscleMass = " + muscleMass);
+        ArrayList<Double> bmis = new ArrayList<>();
+        IntStream.rangeClosed(1, 1000).forEach(
                 i -> {
-                    double weight = Math.round((50 + (140 - 50) * random.nextDouble()) * 10) / 10.0;
-                    double bmi = generateRandomBMI();
-                    double fatMass = generateRandomFatMass(weight, "남");
-                    UserInfo userInfo = UserInfo.builder()
-                            .email("dummy" + i + "@dummy.com")
-                            .userName("dummy" + i)
-                            .userPassword("1234")
-                            .userProfile("profile")
-                            .weight(weight)
-                            .height(calculateHeight(bmi, weight))
-                            .muscleMass(generateRandomMuscleMass(weight))
-                            .fatMass(fatMass)
-                            .bodyScore(calculateBodyScore(weight, bmi, fatMass, "남"))
-                            .BMI(bmi)
-                            .sex("남")
-                            .build();
-                    userInfoRepository.save(userInfo);
+                    bmis.add(dummy.generateRandomBMI());
                 }
         );
+        bmis.sort(Double::compareTo);
+        int removeCount = (int) (bmis.size() * 0.02);
+        for (int i = 0; i < removeCount; i++) {
+            bmis.remove(0);
+            bmis.remove(bmis.size() - 1);
+        }
+        System.out.println(bmis);
+        dummy.calculateMeanAndStdDev(bmis);
+
+        //arraylist에서 상하위 5퍼센트값을 제거
+
+        System.out.println(dummy.calculateBodyScore(169, 78, 26.4, "남"));;
+
     }
+
 
     private double calculateMean(double max, double min) {
         return (max + min) / 2.0;
@@ -135,33 +147,60 @@ public class DummyUserDataCreator {
         return Math.round(ret * point) / point;
     }
 
+    public void createDummy(UserInfoRepository userInfoRepository) {
+        for (int i = 0; i < 100; ++i) {
+
+            double weight = Math.round((50 + (140 - 50) * random.nextDouble()) * 10) / 10.0;
+            double bmi = generateRandomBMI();
+            double fatMass = generateRandomFatMass(weight, "남");
+            double height = calculateHeight(bmi, weight) * 100;
+            double muscleMass = generateRandomMuscleMass(weight);
+            if (isOutlier(fatMass, muscleMass, weight, height, bmi)) {
+                --i;
+                continue;
+            }
+
+            double bodyScore = calculateBodyScore(height, weight, fatMass, "남");
+
+
+            UserInfo userInfo = UserInfo.builder()
+                    .email("dummy" + i + "@dummy.com")
+                    .userName("dummy" + i)
+                    .userPassword("1234")
+                    .userProfile("profile")
+                    .weight(weight)
+                    .height(height)
+                    .muscleMass(muscleMass)
+                    .fatMass(fatMass)
+                    .bodyScore(bodyScore)
+                    .BMI(bmi)
+                    .sex("남")
+                    .isDummy(true)
+                    .build();
+            userInfoRepository.save(userInfo);
+        }
+    }
 
     // 16.5 ~ 34.5 사이의 임의의 수를 뽑는 함수
     private double generateRandomBMI() {
-        return generateRandomValueWithStdDev(calculateMean(bmiMin, bmiMax), 5, 1);
+        return generateRandomValueWithStdDev(calculateMean(bmiMin, bmiMax), 3.5, 1);
     }
 
     private double generateRandomFatMass(double weight, String sex) {
         double fatMass = 0.0;
         if (sex == "남") {
-            fatMass = weight * generateRandomValueWithStdDev(manFatMassAverage, 5, 2);
+            double fatPercent = generateRandomValueWithStdDev(manFatMassAverage, 4, 2) / weight;
+            System.out.println("fatPercent = " + Math.round(fatPercent * 1000.0) / 1000.0);
+            fatMass = weight * fatPercent;
         }
         else if (sex == "여") {
-            fatMass = generateRandomValueWithStdDev(womanFatMassAverage, 5, 2);
+            fatMass = generateRandomValueWithStdDev(womanFatMassAverage, 3.5, 2) / weight;
         }
-        return fatMass;
+        return Math.round(fatMass * 10.0) / 10.0;
     }
 
     private double generateRandomMuscleMass(double weight) {
-        return weight * generateRandomValueWithStdDev(muscleMassAverage, 5, 2);
-    }
-
-
-    // 체중, bmi를 가지고 키를 만들어냅시다. 남자 50~140 여자 40~120
-    private double calculateHeight(double bmi, double weight) {
-        double height = weight / bmi;
-
-        return Math.round(Math.sqrt(height) * 10) / 10.0;
+        return weight * generateRandomValueWithStdDev(muscleMassAverage, 4, 2) / weight;
     }
 
 
@@ -191,7 +230,38 @@ public class DummyUserDataCreator {
         return bodyScore;
     }
 
+    // 체중, bmi를 가지고 키를 만들어냅시다. 남자 50~140 여자 40~120
+    private double calculateHeight(double bmi, double weight) {
+        double height = weight / bmi;
+
+        return Math.round(Math.sqrt(height) * 100.0) / 100.0;
+    }
+
+    // 이상치
+    // fatmass musclemass 합쳐서 weight over
+    // 골격근 45~50 체지방 20~30 최대 85정도
+    // 키가 너무 작은 경우 키가 너무 큰 경우
+    // bmi가 최대 최소를 넘어가는 경우
+    // 체지방률이나 골격근량이 너무너무너무너무 낮거나 큰경우
+    private boolean isOutlier(double fatMass, double muscleMass, double weight, double height, double bmi) {
+        if (fatMass + muscleMass >= weight || fatMass + muscleMass >= weight * 0.85) {
+            return true;
+        }
+        else if(weight < 50 || weight > 140){
+            return true;
+        }
+        else if(height <= 150 || height >= 201) {
+            return true;
+        }
+        else if (bmi < bmiMin || bmi > bmiMax){
+            return true;
+        }
+
+        return false;
+    }
+
     private void calculateMeanAndStdDev(ArrayList<Double> data) {
+
         double sum = 0;
         for (Double value : data) {
             sum += value;
@@ -207,16 +277,4 @@ public class DummyUserDataCreator {
         System.out.println("mean = " + mean);
         System.out.println("meanSquaredDiff = " + Math.sqrt(meanSquaredDiff));
     }
-
-//    public Exercise exerciseCreator(Long id) {
-//        Exercise exercise = Exercise.builder()
-//                .exerciseName("벤치프레스")
-//                .record(defaultValue * 4 + i)
-//                .contents("contents")
-//                .userId(userInfoRepository.findById((long) i).get())
-//                .build();
-//
-//        return exercise;
-//    }
-
 }
