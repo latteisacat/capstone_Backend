@@ -1,6 +1,7 @@
 package com.example.capstone_backend.common.util;
 
 import com.example.capstone_backend.domain.user.ExerciseRepository;
+import com.example.capstone_backend.domain.user.dto.request.UserBodySpecEditDTO;
 import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.RequiredArgsConstructor;
@@ -21,4 +22,40 @@ public class Tools {
         }
     }
 
+    public static Double calculateBodyScore(UserBodySpecEditDTO userBodySpecEditDTO, String sex){
+        Double height = userBodySpecEditDTO.height();
+        Double weight = userBodySpecEditDTO.weight();
+        Double fatMass = userBodySpecEditDTO.fatMass();
+
+        Double FFM = weight - fatMass;
+        Double averageWeight = 0.0;
+
+        Double constantFFM = 0.0;
+        Double constantFatPercent = 0.0;
+        try {
+            if (sex == "남"){
+                constantFFM = 0.85;
+                constantFatPercent = 0.15;
+                averageWeight = Math.pow((height/100),2) * 22;
+            }
+            else if (sex == "여"){
+                constantFFM = 0.77;
+                constantFatPercent = 0.23;
+                averageWeight = Math.pow((height/100),2) * 21;
+            }
+            else
+                throw new IllegalArgumentException("성별을 잘못 입력하셨습니다.");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        Double averageFFM = averageWeight * constantFFM;
+        Double averageFatMass = averageWeight * constantFatPercent;
+
+        Double bodyScore = 80 - (averageFFM - FFM) + (averageFatMass - fatMass);
+        return bodyScore;
+    }
+
+    public static Double calculateBMI(Double height, Double weight){
+        return weight / Math.pow((height/100),2);
+    }
 }
