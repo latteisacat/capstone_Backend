@@ -18,6 +18,11 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
             + " where e.userId = :user")
     List<Exercise> findAllByUser(@Param("user") UserInfo user);
 
+    @Query("select e from Exercise e "
+            + " join e.userId"
+            + " where e.userId = :user and e.exerciseName = :exerciseName")
+    Exercise findByUserAndExerciseName(@Param("user") UserInfo user, @Param("exerciseName") String exerciseName);
+
 
     @Query(
             " select count(*) from Exercise e" +

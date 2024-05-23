@@ -1,17 +1,23 @@
 package com.example.capstone_backend.domain.user.controller;
 
 
+import com.example.capstone_backend.common.jwt.CustomUserDetails;
+import com.example.capstone_backend.domain.fileserver.service.FileValidator;
+import com.example.capstone_backend.domain.fileserver.service.FileWriteServiceTransactionManager;
 import com.example.capstone_backend.domain.user.dto.request.UserBodySpecEditDTO;
 import com.example.capstone_backend.domain.user.dto.request.UserRecordEditDTO;
 import com.example.capstone_backend.domain.user.dto.response.*;
 import com.example.capstone_backend.common.Response;
+import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.service.UserReadService;
+import com.example.capstone_backend.domain.user.service.UserWriteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,36 +28,44 @@ import java.util.List;
 public class UserController {
 
     private final UserReadService userReadService;
+    private final UserWriteService userWriteService;
+
     @PostMapping("/{userId}/modify")
     public ResponseEntity<?> userBodySpecEdit(
-            @PathVariable("userId") final Integer userId,
+            @PathVariable("userId") final Long userId,
             @RequestBody final UserBodySpecEditDTO userBodySpecEditDTO
     ){
+        //userWriteService.userBodySpecEdit(userId, userBodySpecEditDTO);
         return ResponseEntity.ok(Response.success(dummyBodySpecEditResponse()));
     }
 
     @PostMapping(value="/{userId}/record", consumes={"multipart/form-data"})
     public ResponseEntity<?> userRecordEdit(
-            @PathVariable("userId") final Integer userId,
+            @PathVariable("userId") final Long userId,
             @RequestPart("exercise") final UserRecordEditDTO userRecordEditDTO,
-            @RequestPart(value = "exerciseVideo", required = false) final MultipartFile video
-    ){
-        return ResponseEntity.ok(Response.success(dummyRecordEditResponseDTO()));
+            @RequestPart(value = "exerciseVideo", required = false) final MultipartFile video,
+            @AuthenticationPrincipal final CustomUserDetails userDetails
+            ){
+        return ResponseEntity.ok(Response.success(
+                userWriteService.userRecordEdit(userId, userRecordEditDTO, video, userDetails.getUserInfo()
+        )));
     }
 
     @PostMapping(value= "/{userId}/profile", consumes={"multipart/form-data"})
     public ResponseEntity<?> userProfileEdit(
-            @PathVariable("userId") final Integer userId,
-            @RequestPart("profileImage") final MultipartFile profileImage
+            @PathVariable("userId") final Long userId,
+            @RequestPart("profileImage") final MultipartFile profileImage,
+            @AuthenticationPrincipal final CustomUserDetails userDetails
     ){
+        //userWriteService.userProfileEdit(userId, profileImage, userDetails.getUserInfo());
         return ResponseEntity.ok(Response.success(dummyUserProfileEditResponseDTO()));
     }
 
     @GetMapping(value= "/{userId}/profile")
     public ResponseEntity<?> userProfile(
-            @PathVariable("userId") final Integer userId
+            @PathVariable("userId") final Long userId
     ){
-        // userReadService.getUserProfileRequest((long)userId);
+        // userReadService.getUserProfileRequest(userId);
         return ResponseEntity.ok(Response.success(dummyUserProfileRequestResponseDTO()));
     }
 
