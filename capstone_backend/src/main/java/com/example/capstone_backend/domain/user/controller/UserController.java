@@ -1,6 +1,7 @@
 package com.example.capstone_backend.domain.user.controller;
 
 import com.example.capstone_backend.common.jwt.CustomUserDetails;
+import com.example.capstone_backend.common.util.Tools;
 import com.example.capstone_backend.domain.fileserver.service.FileValidator;
 import com.example.capstone_backend.domain.fileserver.service.FileWriteServiceTransactionManager;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
@@ -38,10 +39,11 @@ public class UserController {
     @PostMapping("/{userId}/modify")
     public ResponseEntity<?> userBodySpecEdit(
             @PathVariable("userId") final Long userId,
-            @RequestBody final UserBodySpecEditDTO userBodySpecEditDTO
+            @RequestBody final UserBodySpecEditDTO userBodySpecEditDTO,
+            @AuthenticationPrincipal final CustomUserDetails userDetails
     ){
-        //userWriteService.userBodySpecEdit(userId, userBodySpecEditDTO);
-        return ResponseEntity.ok(Response.success(dummyBodySpecEditResponse()));
+        Tools.invalidUserCheck(userDetails.getUserInfo(), userId);
+        return ResponseEntity.ok(Response.success(userWriteService.userBodySpecEdit(userDetails.getUserInfo(), userBodySpecEditDTO)));
     }
 
     @PostMapping(value="/{userId}/record", consumes={"multipart/form-data"})
@@ -51,6 +53,7 @@ public class UserController {
             @RequestPart(value = "exerciseVideo", required = false) final MultipartFile video,
             @AuthenticationPrincipal final CustomUserDetails userDetails
             ){
+        Tools.invalidUserCheck(userDetails.getUserInfo(), userId);
         return ResponseEntity.ok(Response.success(
                 userWriteService.userRecordEdit(userId, userRecordEditDTO, video, userDetails.getUserInfo()
         )));
@@ -62,16 +65,17 @@ public class UserController {
             @RequestPart("profileImage") final MultipartFile profileImage,
             @AuthenticationPrincipal final CustomUserDetails userDetails
     ){
-        //userWriteService.userProfileEdit(userId, profileImage, userDetails.getUserInfo());
-        return ResponseEntity.ok(Response.success(dummyUserProfileEditResponseDTO()));
+        Tools.invalidUserCheck(userDetails.getUserInfo(), userId);
+        return ResponseEntity.ok(Response.success(
+                userWriteService.userProfileEdit(userId, profileImage, userDetails.getUserInfo()
+                )));
     }
 
     @GetMapping(value= "/{userId}/profile")
     public ResponseEntity<?> userProfile(
             @PathVariable("userId") final Long userId
     ){
-        // userReadService.getUserProfileRequest(userId);
-        return ResponseEntity.ok(Response.success(dummyUserProfileRequestResponseDTO()));
+        return ResponseEntity.ok(userReadService.getUserProfileRequest(userId));
     }
 
     //TODO: 해당 api는 안쓸듯..?

@@ -13,6 +13,7 @@ import com.example.capstone_backend.domain.user.dto.response.UserProfileEditResp
 import com.example.capstone_backend.domain.user.dto.response.UserRecordEditResponseDTO;
 import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
+import com.example.capstone_backend.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class FileWriteServiceTransactionManager {
     private final S3FileRepository fileRepository;
     private final ContentsRepository contentsRepository;
     private final ExerciseRepository exerciseRepository;
+    private final UserInfoRepository userInfoRepository;
 
     public void doContentUploadTransaction(
             final ContentUploadRequestDTO contentUploadRequestDTO,
@@ -69,8 +71,6 @@ public class FileWriteServiceTransactionManager {
         final Double record = Tools.parsingRecord(userRecordEditDTO.record());
         List<Exercise> userExercises;
         try{
-            fileUrl = fileRepository.save(file);
-            savedFileUrls.add(fileUrl);
             userExercises = exerciseRepository.findAllByUser(userInfo);
             OptionalInt indexOpt = IntStream.range(0, userExercises.size())
                     .filter(i -> userExercises.get(i).getExerciseName().equals(userRecordEditDTO.exerciseName()))
@@ -78,17 +78,19 @@ public class FileWriteServiceTransactionManager {
 
             int index = indexOpt.orElse(-1);
             if(index == -1){
-                exerciseRepository.save(
-                        Exercise.builder()
-                                .userId(userInfo)
-                                .exerciseName(userRecordEditDTO.exerciseName())
-                                .record(record)
-                                .contents(fileUrl)
-                                .build()
-                );
+                fileUrl = fileRepository.save(file);
+                savedFileUrls.add(fileUrl);
+                Exercise saveExercise = Exercise.builder()
+                        .userId(userInfo)
+                        .exerciseName(userRecordEditDTO.exerciseName())
+                        .record(record)
+                        .contents(fileUrl)
+                        .build();
+                userExercises.add(saveExercise);
+                exerciseRepository.save(saveExercise);
             }
             else{
-                userExercises.get(index).setContents(fileUrl);
+                fileRepository.overwrite(file, Tools.getFileNameFromUrl(userExercises.get(index).getContents()));
                 userExercises.get(index).setRecord(record);
             }
         }
@@ -104,11 +106,19 @@ public class FileWriteServiceTransactionManager {
             final UserInfo userInfo
     ){
         final String fileUrl;
+        final String previousFileUrl = userInfo.getUserProfile();
         final List<String> savedFileUrls = new ArrayList<>();
         try{
-            fileUrl = fileRepository.save(profileImage);
-            savedFileUrls.add(fileUrl);
-            userInfo.setUserProfile(fileUrl);
+            if(previousFileUrl == null){
+                fileUrl = fileRepository.save(profileImage);
+                savedFileUrls.add(fileUrl);
+                userInfo.setUserProfile(fileUrl);
+                userInfoRepository.save(userInfo);
+            }
+            else{
+                fileRepository.overwrite(profileImage, Tools.getFileNameFromUrl(previousFileUrl));
+                fileUrl = previousFileUrl;
+            }
         }
         catch (final RuntimeException e) {
             fileRepository.deleteAll(savedFileUrls);
@@ -116,6 +126,7 @@ public class FileWriteServiceTransactionManager {
         }
         return UserProfileEditResponseDTO.builder()
                 .userId(userInfo.getId())
+                .userName(userInfo.getUserName())
                 .userProfile(fileUrl)
                 .build();
     }

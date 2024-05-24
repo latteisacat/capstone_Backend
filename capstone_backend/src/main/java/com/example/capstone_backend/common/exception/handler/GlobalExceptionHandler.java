@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ForbiddenException.class})
-    public ResponseEntity<?> handleForbiddenExceptionn(final Exception e) {
+    public ResponseEntity<?> handleForbiddenException(final Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Response.error(e.getMessage(), HttpStatus.FORBIDDEN));
     }
 
@@ -82,11 +82,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handlePetNotFoundException(final Exception e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error(e.getMessage(), HttpStatus.NOT_FOUND));
     }
-    @ExceptionHandler({ContentsNotFoundException.class})
-    public ResponseEntity<?> handleShelterNotFoundException(final Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error(e.getMessage(), HttpStatus.NOT_FOUND));
-    }
-
     @ExceptionHandler({ContentsNotFoundException.class})
     public ResponseEntity<?> handleContentsNotFoundException(final Exception e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error(e.getMessage(), HttpStatus.NOT_FOUND));

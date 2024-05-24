@@ -1,12 +1,14 @@
 package com.example.capstone_backend.domain.home.controller;
 
 
+import com.example.capstone_backend.common.jwt.CustomUserDetails;
 import com.example.capstone_backend.domain.home.service.HomeReadService;
 import com.example.capstone_backend.domain.user.dto.response.UserCompetitorDTO;
 import com.example.capstone_backend.domain.user.dto.response.UserHomeResponseDTO;
 import com.example.capstone_backend.common.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,9 +22,10 @@ public class HomeController {
     final private HomeReadService homeReadService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> userHome(@PathVariable("userId") final Integer userId){
-        // homeReadService.getUserHome((long)userId);
-        return ResponseEntity.ok(Response.success(dummy()));
+    public ResponseEntity<?> userHome(
+            @PathVariable("userId") final Long userId
+    ){
+        return ResponseEntity.ok(Response.success(homeReadService.getUserHome(userId)));
     }
 
     private UserHomeResponseDTO dummy(){

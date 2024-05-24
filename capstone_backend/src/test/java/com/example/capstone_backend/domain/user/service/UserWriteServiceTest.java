@@ -40,7 +40,7 @@ class UserWriteServiceTest {
                 .muscleMass(33d)
                 .fatMass(9d)
                 .build();
-        System.out.println(userWriteService.userBodySpecEdit(userInfo.getId(), userBodySpecEditDTO));
+        System.out.println(userWriteService.userBodySpecEdit(userInfo, userBodySpecEditDTO));
     }
 
 }

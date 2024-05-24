@@ -4,6 +4,7 @@ package com.example.capstone_backend.domain.community.controller;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.capstone_backend.common.Response;
 import com.example.capstone_backend.common.jwt.CustomUserDetails;
+import com.example.capstone_backend.common.util.Tools;
 import com.example.capstone_backend.domain.community.dto.request.ContentUploadRequestDTO;
 import com.example.capstone_backend.domain.community.dto.response.CommunityResponseDTO;
 import com.example.capstone_backend.domain.community.dto.response.ContentResponseDTO;
@@ -34,14 +35,13 @@ import java.util.TooManyListenersException;
 public class CommunityController {
 
     final private FileWriteServiceTransactionManager transactionManager;
-
+    final private CommunityReadService communityReadService;
     final private FileValidator fileValidator;
 
 
     @GetMapping("")
     public ResponseEntity<?> community(@PageableDefault final Pageable pageable){
-        // communityReadService.getCommunityContents(pageable);
-        return ResponseEntity.ok(Response.success(dummyCommunityResponseDTO()));
+        return ResponseEntity.ok(Response.success(communityReadService.getCommunityContents(pageable)));
     }
 
     private static CommunityResponseDTO dummyCommunityResponseDTO(){
@@ -62,8 +62,7 @@ public class CommunityController {
     @GetMapping("/{contentId}")
     public ResponseEntity<?> communityContent(
             @PathVariable final Long contentId) {
-        //communityReadService.getContent(contentId);
-        return ResponseEntity.ok(Response.success(dummyCommunityContentResponseDTO()));
+        return ResponseEntity.ok(Response.success(communityReadService.getContent(contentId)));
     }
 
     private static ContentResponseDTO dummyCommunityContentResponseDTO(){
@@ -93,7 +92,7 @@ public class CommunityController {
             @RequestPart(value = "video", required = false)final MultipartFile video,
             @AuthenticationPrincipal final CustomUserDetails userDetails
             ){
-        // System.out.println("->"+ userDetails.getUserInfo());
+        Tools.invalidUserCheck(userDetails.getUserInfo(), contentUploadRequestDTO.userId());
         contentsValidator(image, video, userDetails, contentUploadRequestDTO);
         return ResponseEntity.ok(Response.success(null));
     }

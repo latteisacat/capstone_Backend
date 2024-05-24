@@ -1,5 +1,6 @@
 package com.example.capstone_backend.common.util;
 
+import com.example.capstone_backend.common.jwt.CustomUserDetails;
 import com.example.capstone_backend.domain.user.ExerciseRepository;
 import com.example.capstone_backend.domain.user.dto.request.UserBodySpecEditDTO;
 import com.example.capstone_backend.domain.user.entity.Exercise;
@@ -7,6 +8,7 @@ import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class Tools {
@@ -33,12 +35,12 @@ public class Tools {
         Double constantFFM = 0.0;
         Double constantFatPercent = 0.0;
         try {
-            if (sex == "남"){
+            if (Objects.equals(sex, "남")){
                 constantFFM = 0.85;
                 constantFatPercent = 0.15;
                 averageWeight = Math.pow((height/100),2) * 22;
             }
-            else if (sex == "여"){
+            else if (Objects.equals(sex, "여")){
                 constantFFM = 0.77;
                 constantFatPercent = 0.23;
                 averageWeight = Math.pow((height/100),2) * 21;
@@ -57,5 +59,19 @@ public class Tools {
 
     public static Double calculateBMI(Double height, Double weight){
         return weight / Math.pow((height/100),2);
+    }
+
+    public static void invalidUserCheck(UserInfo userInfo, Long userId){
+        if (userInfo == null){
+            throw new IllegalArgumentException("user not found with userId: " + userId);
+        }
+        else if(userInfo.getId() != userId){
+            throw new IllegalArgumentException("user not matched with userId: " + userId);
+        }
+    }
+
+    public static String getFileNameFromUrl(final String url) {
+        final String[] splitUrl = url.split("/");
+        return splitUrl[splitUrl.length - 1];
     }
 }

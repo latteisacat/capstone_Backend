@@ -33,8 +33,7 @@ public class UserWriteService {
     final private FileWriteServiceTransactionManager transactionManager;
 
     final private ExerciseRepository exerciseRepository;
-    public UserBodySpecEditResponseDTO userBodySpecEdit(Long userId, UserBodySpecEditDTO userBodySpecEditDTO){
-        UserInfo user = userInfoRepository.findById(userId).orElseThrow();
+    public UserBodySpecEditResponseDTO userBodySpecEdit(UserInfo user, UserBodySpecEditDTO userBodySpecEditDTO){
         String sex = user.getSex();
 
         user.setHeight(userBodySpecEditDTO.height());

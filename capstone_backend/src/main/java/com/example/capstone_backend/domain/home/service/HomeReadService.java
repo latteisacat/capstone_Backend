@@ -35,9 +35,23 @@ public class HomeReadService {
         String sex = user.getSex();
 
         Long userCount = userInfoRepository.userCount(sex);
-        Double percentageFat = user.getFatMass() / user.getWeight() * 100;
-        Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUserCount(user.getBodyScore(), sex);
-        Double userPercentage = (double) betterBodyScoreUserCount / userCount * 100;
+        Double percentageFat;
+        Double userPercentage;
+        if (user.getFatMass() != null){
+            percentageFat = user.getFatMass() / user.getWeight() * 100;
+        }
+        else{
+            percentageFat = null;
+        }
+
+        if (user.getBodyScore() != null){
+            Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUserCount(user.getBodyScore(), sex);
+            userPercentage = (double) betterBodyScoreUserCount / userCount * 100;
+        }
+        else{
+            userPercentage = null;
+        }
+
 
         List<UserHomeResponseDTO.UserRecord> userRecords = getUserRecords(myExerciseList, sex);
 
@@ -45,15 +59,17 @@ public class HomeReadService {
 
         Double range = 0.15;
         Integer count = 0;
-        List<UserHomeResponseDTO.RecommendedUser> recommendedUsers;
-        do{
-            count += 1;
-            recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), range)
-                    .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
-            recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
-            System.out.println("사이즈 : " + recommendedUsers.size());
-            range += 0.05;
-        }while(recommendedUsers.size() == 0 ||  count < 5);
+        List<UserHomeResponseDTO.RecommendedUser> recommendedUsers = new ArrayList<>();
+        if (userRecords.size() != 0){
+            do{
+                count += 1;
+                recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), range)
+                        .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
+                recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
+                System.out.println("사이즈 : " + recommendedUsers.size());
+                range += 0.05;
+            }while(recommendedUsers.size() == 0 && count < 5);
+        }
 
         List<UserCompetitorDTO> userCompetitorDTOList = getUserCompetitorDTOList(user, myCompetitors);
 
