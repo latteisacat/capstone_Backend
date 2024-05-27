@@ -1,82 +1,103 @@
 package com.example.capstone_backend.domain.community.controller;
 
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.capstone_backend.common.Response;
+import com.example.capstone_backend.common.jwt.CustomUserDetails;
+import com.example.capstone_backend.common.util.Tools;
+import com.example.capstone_backend.domain.community.dto.request.CommentRequestDTO;
 import com.example.capstone_backend.domain.community.dto.request.ContentUploadRequestDTO;
 import com.example.capstone_backend.domain.community.dto.response.CommunityResponseDTO;
 import com.example.capstone_backend.domain.community.dto.response.ContentResponseDTO;
+import com.example.capstone_backend.domain.community.exception.ContentsNotFoundException;
+import com.example.capstone_backend.domain.community.exception.ContentsRequiredException;
+import com.example.capstone_backend.domain.community.exception.TooManyContentsException;
 import com.example.capstone_backend.domain.community.service.CommunityReadService;
+import com.example.capstone_backend.domain.community.service.CommunityWriteService;
+import com.example.capstone_backend.domain.fileserver.service.FileValidator;
+import com.example.capstone_backend.domain.fileserver.service.FileWriteServiceTransactionManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TooManyListenersException;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/community")
 public class CommunityController {
 
+    final private FileWriteServiceTransactionManager transactionManager;
     final private CommunityReadService communityReadService;
+    final private CommunityWriteService communityWriteService;
+    final private FileValidator fileValidator;
+
 
     @GetMapping("")
     public ResponseEntity<?> community(@PageableDefault final Pageable pageable){
-        // communityReadService.getCommunityContents(pageable);
-        return ResponseEntity.ok(Response.success(dummyCommunityResponseDTO()));
+        return ResponseEntity.ok(Response.success(communityReadService.getCommunityContents(pageable)));
     }
 
-    private static CommunityResponseDTO dummyCommunityResponseDTO(){
-        List<CommunityResponseDTO.CommunityContentDTO> communityContents = new ArrayList<>();
-        for(int i = 0; i < 10; i++){
-            communityContents.add(CommunityResponseDTO.CommunityContentDTO.builder()
-                    .contentId((long)i)
-                    .address("content.asdf.asdf")
-                    .contentType("image")
-                    .thumbnail("content.asdf.asdf")
-                    .build());
-        }
-        return CommunityResponseDTO.builder()
-                .contents(communityContents)
-                .hasNext(false)
-                .build();
-    }
     @GetMapping("/{contentId}")
     public ResponseEntity<?> communityContent(
             @PathVariable final Long contentId) {
-        //communityReadService.getContent(contentId);
-        return ResponseEntity.ok(Response.success(dummyCommunityContentResponseDTO()));
+        return ResponseEntity.ok(Response.success(communityReadService.getContent(contentId)));
     }
 
-    private static ContentResponseDTO dummyCommunityContentResponseDTO(){
-        List<ContentResponseDTO.UserComment> comments = new ArrayList<>();
-        for(int i = 0; i < 10; i++){
-            comments.add(ContentResponseDTO.UserComment.builder()
-                    .commentId((long)i + 2)
-                    .userId((long)i)
-                    .profileImage("profile.asdf.asdf")
-                    .comment("comment")
-                    .build());
-        }
-        return ContentResponseDTO.builder()
-                .profileImage("profile.asdf.asdf")
-                .userId(1L)
-                .text("text")
-                .content("content")
-                .thumbnail("content.asdf.asdf")
-                .comments(comments)
-                .build();
+    @PostMapping("/{contentId}/comment")
+    public ResponseEntity<?> commentContent(
+            @PathVariable final Long contentId,
+            @RequestBody final CommentRequestDTO commentRequestDTO,
+            @AuthenticationPrincipal final CustomUserDetails userDetails
+    ){
+        Tools.invalidUserCheck(userDetails.getUserInfo(), commentRequestDTO.userId());
+
+        return ResponseEntity.ok(Response.success(communityWriteService.uploadComment(
+                contentId, commentRequestDTO, userDetails.getUserInfo()
+        )));
     }
 
     @PostMapping(value = "/upload", consumes={"multipart/form-data"})
     public ResponseEntity<?> uploadContent(
             @RequestPart("text")final ContentUploadRequestDTO contentUploadRequestDTO,
             @RequestPart(value = "image", required = false)final MultipartFile image,
-            @RequestPart(value = "video", required = false)final MultipartFile video
+            @RequestPart(value = "video", required = false)final MultipartFile video,
+            @AuthenticationPrincipal final CustomUserDetails userDetails
             ){
+        Tools.invalidUserCheck(userDetails.getUserInfo(), contentUploadRequestDTO.userId());
+        contentsValidator(image, video, userDetails, contentUploadRequestDTO);
         return ResponseEntity.ok(Response.success(null));
+    }
+
+    private void contentsValidator(
+            MultipartFile image,
+            MultipartFile video,
+            CustomUserDetails userDetails,
+            ContentUploadRequestDTO contentUploadRequestDTO) {
+        if((image ==null || image.isEmpty())&&(video ==null || video.isEmpty())){
+            throw new ContentsRequiredException();
+        }
+        else if((image !=null || !image.isEmpty())&&(video ==null || video.isEmpty()))
+        {
+            fileValidator.validateImageFile(image);
+            transactionManager.doContentUploadTransaction(contentUploadRequestDTO, image, userDetails.getUserInfo(), "image");
+        }
+        else if((image ==null || image.isEmpty())&&(video !=null || !video.isEmpty()))
+        {
+            fileValidator.validateVideoFile(video);
+            transactionManager.doContentUploadTransaction(contentUploadRequestDTO, video, userDetails.getUserInfo(), "video");
+        }
+        else{
+            throw new TooManyContentsException();
+        }
     }
 }

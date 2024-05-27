@@ -1,12 +1,25 @@
 package com.example.capstone_backend.domain.user.service;
 
+import com.example.capstone_backend.common.util.Tools;
+import com.example.capstone_backend.domain.fileserver.service.FileValidator;
+import com.example.capstone_backend.domain.fileserver.service.FileWriteServiceTransactionManager;
+import com.example.capstone_backend.domain.user.ExerciseRepository;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
 import com.example.capstone_backend.domain.user.dto.request.UserBodySpecEditDTO;
+import com.example.capstone_backend.domain.user.dto.request.UserRecordEditDTO;
 import com.example.capstone_backend.domain.user.dto.response.UserBodySpecEditResponseDTO;
+import com.example.capstone_backend.domain.user.dto.response.UserProfileEditResponseDTO;
+import com.example.capstone_backend.domain.user.dto.response.UserRecordEditResponseDTO;
+import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.OptionalInt;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -14,8 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserWriteService {
 
     final private UserInfoRepository userInfoRepository;
-    public UserBodySpecEditResponseDTO userBodySpecEdit(Long userId, UserBodySpecEditDTO userBodySpecEditDTO){
-        UserInfo user = userInfoRepository.findById(userId).orElseThrow();
+
+    final private FileValidator fileValidator;
+
+    final private FileWriteServiceTransactionManager transactionManager;
+
+    final private ExerciseRepository exerciseRepository;
+    public UserBodySpecEditResponseDTO userBodySpecEdit(UserInfo user, UserBodySpecEditDTO userBodySpecEditDTO){
         String sex = user.getSex();
 
         user.setHeight(userBodySpecEditDTO.height());
@@ -23,10 +41,10 @@ public class UserWriteService {
         user.setMuscleMass(userBodySpecEditDTO.muscleMass());
         user.setFatMass(userBodySpecEditDTO.fatMass());
 
-        double bodyScore = calculateBodyScore(userBodySpecEditDTO, sex);
+        double bodyScore = Tools.calculateBodyScore(userBodySpecEditDTO, sex);
         user.setBodyScore(bodyScore);
 
-        double BMI = calculateBMI(userBodySpecEditDTO.height(), userBodySpecEditDTO.weight());
+        double BMI = Tools.calculateBMI(userBodySpecEditDTO.height(), userBodySpecEditDTO.weight());
         user.setBMI(BMI);
 
         return UserBodySpecEditResponseDTO.builder()
@@ -40,38 +58,64 @@ public class UserWriteService {
                 .build();
     }
 
-    private Double calculateBodyScore(UserBodySpecEditDTO userBodySpecEditDTO, String sex){
-        Double height = userBodySpecEditDTO.height();
-        Double weight = userBodySpecEditDTO.weight();
-        Double fatMass = userBodySpecEditDTO.fatMass();
-
-        Double FFM = weight - fatMass;
-        Double averageWeight = Math.pow((height/100),2) * 22;
-
-        Double constantFFM = 0.0;
-        Double constantFatPercent = 0.0;
-        try {
-            if (sex == "남"){
-                constantFFM = 0.85;
-                constantFatPercent = 0.15;
-            }
-            else if (sex == "여"){
-                constantFFM = 0.77;
-                constantFatPercent = 0.23;
-            }
-            else
-                throw new IllegalArgumentException("성별을 잘못 입력하셨습니다.");
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+    public UserRecordEditResponseDTO userRecordEdit(
+            final Long userId,
+            final UserRecordEditDTO userRecordEditDTO,
+            final MultipartFile video,
+            final UserInfo userInfo
+            ){
+        List<Exercise> userExercises;
+        final Double record = Tools.parsingRecord(userRecordEditDTO.record());
+        if(video != null){
+            fileValidator.validateVideoFile(video);
+            userExercises = transactionManager
+                    .doExerciseRecordUploadTransaction(userRecordEditDTO, video, userInfo);
         }
-        Double averageFFM = averageWeight * constantFFM;
-        Double averageFatMass = averageWeight * constantFatPercent;
-
-        Double bodyScore = 80 - (averageFFM - FFM) + (averageFatMass - fatMass);
-        return bodyScore;
+        else{
+            userExercises = exerciseRepository.findAllByUser(userInfo);
+            OptionalInt indexOpt = IntStream.range(0, userExercises.size())
+                    .filter(i -> userExercises.get(i).getExerciseName().equals(userRecordEditDTO.exerciseName()))
+                    .findFirst();
+            int index = indexOpt.orElse(-1);
+            if(index == -1){
+                exerciseRepository.save(
+                        Exercise.builder()
+                                .userId(userInfo)
+                                .exerciseName(userRecordEditDTO.exerciseName())
+                                .record(record)
+                                .build()
+                );
+            }
+            else{
+                userExercises.get(index).setRecord(record);
+            }
+        }
+        List<Double> percentages = userExercises.stream()
+                .map(exercise -> {
+                    Long exerciseUserCount = exerciseRepository.getExerciseUserCount(
+                            exercise.getExerciseName(), userInfo.getSex()
+                    );
+                    Long betterExerciseUserCount = exerciseRepository.getBetterExerciseUserCount(
+                            exercise.getExerciseName(), exercise.getRecord(), userInfo.getSex()
+                    );
+                    return (double) betterExerciseUserCount / exerciseUserCount * 100;
+                })
+                .toList();
+        return UserRecordEditResponseDTO.builder()
+                .userId(userInfo.getId())
+                .userRecords(IntStream.range(0, userExercises.size())
+                        .mapToObj(i -> UserRecordEditResponseDTO.UserRecord.of(userExercises.get(i), percentages.get(i)))
+                        .toList())
+                .build();
     }
 
-    private Double calculateBMI(Double height, Double weight){
-        return weight / Math.pow((height/100),2);
+    public UserProfileEditResponseDTO userProfileEdit(
+            final Long userId,
+            final MultipartFile profileImage,
+            final UserInfo userInfo
+    ){
+        fileValidator.validateImageFile(profileImage);
+        return transactionManager.doUserProfileEditTransaction(profileImage, userInfo);
     }
+
 }

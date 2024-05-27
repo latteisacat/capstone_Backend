@@ -6,6 +6,7 @@ import com.example.capstone_backend.domain.account.exception.CheckEmailOrPasswor
 import com.example.capstone_backend.domain.account.exception.ForbiddenException;
 import com.example.capstone_backend.domain.account.exception.UserPermissionDeniedException;
 import com.example.capstone_backend.domain.community.exception.ContentsNotFoundException;
+import com.example.capstone_backend.domain.community.exception.TooManyContentsException;
 import com.example.capstone_backend.domain.fileserver.exception.*;
 import com.example.capstone_backend.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +73,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ForbiddenException.class})
-    public ResponseEntity<?> handleForbiddenExceptionn(final Exception e) {
+    public ResponseEntity<?> handleForbiddenException(final Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Response.error(e.getMessage(), HttpStatus.FORBIDDEN));
     }
 
@@ -82,7 +83,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error(e.getMessage(), HttpStatus.NOT_FOUND));
     }
     @ExceptionHandler({ContentsNotFoundException.class})
-    public ResponseEntity<?> handleShelterNotFoundException(final Exception e) {
+    public ResponseEntity<?> handleContentsNotFoundException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error(e.getMessage(), HttpStatus.NOT_FOUND));
+    }
+
+    @ExceptionHandler({TooManyContentsException.class})
+    public ResponseEntity<?> handleTooManyContentsException(final Exception e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error(e.getMessage(), HttpStatus.NOT_FOUND));
     }
 
@@ -97,11 +103,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> internalServerError(final Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Response.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
-//TODO: AmazonS3 연결 후 활성화
-//    @ExceptionHandler({AmazonS3SaveError.class})
-//    public ResponseEntity<?> handleAmazonS3SaveException(final Exception e) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Response.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
-//    }
+    @ExceptionHandler({AmazonS3SaveError.class})
+    public ResponseEntity<?> handleAmazonS3SaveException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Response.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+    }
 
     @ExceptionHandler({
             MethodArgumentTypeMismatchException.class,
