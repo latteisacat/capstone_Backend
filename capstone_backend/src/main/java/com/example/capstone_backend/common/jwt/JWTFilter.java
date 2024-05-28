@@ -1,7 +1,14 @@
 package com.example.capstone_backend.common.jwt;
 
+import com.example.capstone_backend.common.Response;
+import com.example.capstone_backend.domain.account.exception.UserPermissionDeniedException;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,17 +28,19 @@ public class JWTFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         //request에서 Authorization 헤더를 찾음
-        String authorization= request.getHeader("Authorization");
+        String authorization = request.getHeader("Authorization");
 
         //Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
 
             System.out.println("token null");
-            filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
+            try {
+                filterChain.doFilter(request, response);
+            } catch (ServletException | IOException e) {
+                setErrorResponse(response, "권한이 없습니다.");
+            }
             return;
         }
 
@@ -43,7 +52,11 @@ public class JWTFilter extends OncePerRequestFilter {
         if (jwtUtil.isExpired(token)) {
 
             System.out.println("token expired");
-            filterChain.doFilter(request, response);
+            try {
+                filterChain.doFilter(request, response);
+            } catch (ServletException | IOException | ExpiredJwtException e ) {
+                setErrorResponse(response, "토큰의 유효기간이 만료되었습니다.");
+            }
 
             //조건이 해당되면 메소드 종료 (필수)
             return;
@@ -60,7 +73,26 @@ public class JWTFilter extends OncePerRequestFilter {
         //세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } catch (ServletException | IOException e) {
+            setErrorResponse(response, "인증 과정에서 문제가 발생했습니다.");
+        }
+
+    }
+
+    private void setErrorResponse(
+            HttpServletResponse response,
+            String message
+    ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setStatus(403);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        try {
+            response.getWriter().write(objectMapper.writeValueAsString(Response.error(message, HttpStatus.FORBIDDEN)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

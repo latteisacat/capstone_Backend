@@ -61,11 +61,11 @@ public class Tools {
         return weight / Math.pow((height/100),2);
     }
 
-    public static void invalidUserCheck(UserInfo userInfo, Long userId){
-        if (userInfo == null){
-            throw new IllegalArgumentException("user not found with userId: " + userId);
+    public static void invalidUserCheck(CustomUserDetails userDetails, Long userId){
+        if (userDetails == null){
+            throw new IllegalArgumentException("user not found with userId: " + userId + "or token is null");
         }
-        else if(userInfo.getId() != userId){
+        else if(userDetails.getUserInfo().getId() != userId){
             throw new IllegalArgumentException("user not matched with userId: " + userId);
         }
     }
@@ -73,5 +73,12 @@ public class Tools {
     public static String getFileNameFromUrl(final String url) {
         final String[] splitUrl = url.split("/");
         return splitUrl[splitUrl.length - 1];
+    }
+
+    public static String thumbnailUrl(String url) {
+        String[] parts = url.split("/");
+        String filename = parts[parts.length - 1];
+        parts[parts.length - 1] = "thumbnails/" + filename + ".thumbnail";
+        return String.join("/", parts);
     }
 }

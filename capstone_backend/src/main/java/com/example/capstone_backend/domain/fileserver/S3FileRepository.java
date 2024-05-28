@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Repository
@@ -29,8 +30,7 @@ public class S3FileRepository {
     }
 
     public String save(final MultipartFile file) {
-        final String fileName = UUID.randomUUID().toString();
-
+        final String fileName = UUID.randomUUID() + "." +getFileExtension(file);
         saveToS3(file, fileName);
 
         return s3Client
@@ -70,7 +70,7 @@ public class S3FileRepository {
             s3Client.putObject(builder -> builder
                             .bucket(bucket)
                             .key(fileName)
-                            .acl(ObjectCannedACL.PUBLIC_READ)
+                            .acl(ObjectCannedACL.BUCKET_OWNER_FULL_CONTROL)
                             .build(),
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
@@ -80,5 +80,10 @@ public class S3FileRepository {
         } catch (final IOException ex) {
             throw new InvalidFileTypeException();
         }
+    }
+
+    private String getFileExtension(final MultipartFile file) {
+        final String fileName = file.getOriginalFilename();
+        return Objects.requireNonNull(fileName).substring(fileName.lastIndexOf(".")).substring(1).toLowerCase();
     }
 }

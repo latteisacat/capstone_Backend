@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
 
     // 403
     @ExceptionHandler({UserPermissionDeniedException.class})
-    public ResponseEntity<?> handleShelterPermissionDeniedException(final Exception e) {
+    public ResponseEntity<?> handleUserPermissionDeniedException(final Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Response.error(e.getMessage(), HttpStatus.FORBIDDEN));
     }
 
