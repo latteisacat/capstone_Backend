@@ -59,7 +59,7 @@ public class CommunityController {
             @RequestBody final CommentRequestDTO commentRequestDTO,
             @AuthenticationPrincipal final CustomUserDetails userDetails
     ){
-        Tools.invalidUserCheck(userDetails.getUserInfo(), commentRequestDTO.userId());
+        Tools.invalidUserCheck(userDetails, commentRequestDTO.userId());
 
         return ResponseEntity.ok(Response.success(communityWriteService.uploadComment(
                 contentId, commentRequestDTO, userDetails.getUserInfo()
@@ -73,7 +73,7 @@ public class CommunityController {
             @RequestPart(value = "video", required = false)final MultipartFile video,
             @AuthenticationPrincipal final CustomUserDetails userDetails
             ){
-        Tools.invalidUserCheck(userDetails.getUserInfo(), contentUploadRequestDTO.userId());
+        Tools.invalidUserCheck(userDetails, contentUploadRequestDTO.userId());
         contentsValidator(image, video, userDetails, contentUploadRequestDTO);
         return ResponseEntity.ok(Response.success(null));
     }
@@ -86,12 +86,12 @@ public class CommunityController {
         if((image ==null || image.isEmpty())&&(video ==null || video.isEmpty())){
             throw new ContentsRequiredException();
         }
-        else if((image !=null || !image.isEmpty())&&(video ==null || video.isEmpty()))
+        else if((image != null && !image.isEmpty())&&(video ==null || video.isEmpty()))
         {
             fileValidator.validateImageFile(image);
             transactionManager.doContentUploadTransaction(contentUploadRequestDTO, image, userDetails.getUserInfo(), "image");
         }
-        else if((image ==null || image.isEmpty())&&(video !=null || !video.isEmpty()))
+        else if((image ==null || image.isEmpty())&&(video !=null && !video.isEmpty()))
         {
             fileValidator.validateVideoFile(video);
             transactionManager.doContentUploadTransaction(contentUploadRequestDTO, video, userDetails.getUserInfo(), "video");

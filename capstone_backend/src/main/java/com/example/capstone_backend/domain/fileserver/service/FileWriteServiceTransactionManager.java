@@ -50,8 +50,9 @@ public class FileWriteServiceTransactionManager {
                             .userId(userInfo)
                             .contents(fileUrl)
                             .contentText(contentUploadRequestDTO.text())
+                            .thumbnail(Tools.thumbnailUrl(fileUrl))
                             .datatype(contentsType)
-                            .thumbnail(null)
+                            .thumbnail(Tools.thumbnailUrl(fileUrl))
                             .build()
             );
         }

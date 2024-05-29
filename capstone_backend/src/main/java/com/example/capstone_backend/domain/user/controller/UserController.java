@@ -42,7 +42,7 @@ public class UserController {
             @RequestBody final UserBodySpecEditDTO userBodySpecEditDTO,
             @AuthenticationPrincipal final CustomUserDetails userDetails
     ){
-        Tools.invalidUserCheck(userDetails.getUserInfo(), userId);
+        Tools.invalidUserCheck(userDetails, userId);
         return ResponseEntity.ok(Response.success(userWriteService.userBodySpecEdit(userDetails.getUserInfo(), userBodySpecEditDTO)));
     }
 
@@ -53,7 +53,7 @@ public class UserController {
             @RequestPart(value = "exerciseVideo", required = false) final MultipartFile video,
             @AuthenticationPrincipal final CustomUserDetails userDetails
             ){
-        Tools.invalidUserCheck(userDetails.getUserInfo(), userId);
+        Tools.invalidUserCheck(userDetails, userId);
         return ResponseEntity.ok(Response.success(
                 userWriteService.userRecordEdit(userId, userRecordEditDTO, video, userDetails.getUserInfo()
         )));
@@ -65,7 +65,7 @@ public class UserController {
             @RequestPart("profileImage") final MultipartFile profileImage,
             @AuthenticationPrincipal final CustomUserDetails userDetails
     ){
-        Tools.invalidUserCheck(userDetails.getUserInfo(), userId);
+        Tools.invalidUserCheck(userDetails, userId);
         return ResponseEntity.ok(Response.success(
                 userWriteService.userProfileEdit(userId, profileImage, userDetails.getUserInfo()
                 )));
