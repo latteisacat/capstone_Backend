@@ -47,6 +47,8 @@ public class UserWriteService {
         double BMI = Tools.calculateBMI(userBodySpecEditDTO.height(), userBodySpecEditDTO.weight());
         user.setBMI(BMI);
 
+        userInfoRepository.save(user);
+
         return UserBodySpecEditResponseDTO.builder()
                 .userId(user.getId())
                 .height(userBodySpecEditDTO.height())
