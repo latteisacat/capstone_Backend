@@ -41,6 +41,10 @@ public class FileValidator {
 
     private String getFileExtension(final MultipartFile file) {
         final String fileName = file.getOriginalFilename();
-        return Objects.requireNonNull(fileName).substring(fileName.lastIndexOf(".")).substring(1).toLowerCase();
+        try {
+            return Objects.requireNonNull(fileName).substring(fileName.lastIndexOf(".")).substring(1).toLowerCase();
+        } catch (Exception e) {
+            throw new InvalidVideoTypeException();
+        }
     }
 }

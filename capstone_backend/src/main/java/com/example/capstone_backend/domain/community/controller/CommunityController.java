@@ -86,12 +86,12 @@ public class CommunityController {
         if((image ==null || image.isEmpty())&&(video ==null || video.isEmpty())){
             throw new ContentsRequiredException();
         }
-        else if((image !=null || !image.isEmpty())&&(video ==null || video.isEmpty()))
+        else if((image != null && !image.isEmpty())&&(video ==null || video.isEmpty()))
         {
             fileValidator.validateImageFile(image);
             transactionManager.doContentUploadTransaction(contentUploadRequestDTO, image, userDetails.getUserInfo(), "image");
         }
-        else if((image ==null || image.isEmpty())&&(video !=null || !video.isEmpty()))
+        else if((image ==null || image.isEmpty())&&(video !=null && !video.isEmpty()))
         {
             fileValidator.validateVideoFile(video);
             transactionManager.doContentUploadTransaction(contentUploadRequestDTO, video, userDetails.getUserInfo(), "video");
