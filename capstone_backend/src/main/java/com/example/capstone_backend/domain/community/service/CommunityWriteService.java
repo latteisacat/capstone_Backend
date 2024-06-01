@@ -36,6 +36,6 @@ public class CommunityWriteService {
         List<Comments> comments = commentsRepository.findAllByContents(content);
         comments.add(comment);
         commentsRepository.save(comment);
-        return ContentResponseDTO.of(content, comments);
+        return ContentResponseDTO.of(content, comments, user);
     }
 }
