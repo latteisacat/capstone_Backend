@@ -2,6 +2,7 @@ package com.example.capstone_backend.domain.community.dto.response;
 
 import com.example.capstone_backend.domain.fileserver.entity.Comments;
 import com.example.capstone_backend.domain.fileserver.entity.Contents;
+import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.Builder;
 
 import java.util.List;
@@ -13,7 +14,9 @@ public record ContentResponseDTO(
         String text,
         String content,
         List<UserComment> comments,
-        String thumbnail
+        String thumbnail,
+        Long connectedUserId,
+        String connectedUserProfile
 
 ) {
     @Builder
@@ -32,7 +35,7 @@ public record ContentResponseDTO(
                     .build();
         }
     }
-    public static ContentResponseDTO of(final Contents contents, final List<Comments> comments){
+    public static ContentResponseDTO of(final Contents contents, final List<Comments> comments, final UserInfo connectedUser){
         return ContentResponseDTO.builder()
                 .profileImage(contents.getUserId().getUserProfile())
                 .userId(contents.getUserId().getId())
@@ -40,6 +43,8 @@ public record ContentResponseDTO(
                 .content(contents.getContents())
                 .thumbnail(contents.getThumbnail())
                 .comments(comments.stream().map(UserComment::of).toList())
+                .connectedUserId(connectedUser.getId())
+                .connectedUserProfile(connectedUser.getUserProfile())
                 .build();
     }
 }

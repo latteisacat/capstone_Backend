@@ -1,5 +1,6 @@
 package com.example.capstone_backend.domain.community.service;
 
+import com.example.capstone_backend.common.jwt.CustomUserDetails;
 import com.example.capstone_backend.domain.community.dto.request.CommentRequestDTO;
 import com.example.capstone_backend.domain.community.dto.response.CommunityResponseDTO;
 import com.example.capstone_backend.domain.community.dto.response.ContentResponseDTO;
@@ -28,10 +29,10 @@ public class CommunityReadService {
         return CommunityResponseDTO.of(contents, contents.hasNext());
     }
 
-    public ContentResponseDTO getContent(final Long contentId){
+    public ContentResponseDTO getContent(final Long contentId, final CustomUserDetails userDetails){
         Contents content = contentsRepository.findById(contentId).orElseThrow();
         List<Comments> comments = commentsRepository.findAllByContents(content);
-        return ContentResponseDTO.of(content, comments);
+        return ContentResponseDTO.of(content, comments, userDetails.getUserInfo());
     }
 
 }
