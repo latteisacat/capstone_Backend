@@ -30,7 +30,6 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    // TODO: 나중에 삭제하기
     private final UserInfoRepository userInfoRepository;
 
     private final UserReadService userReadService;
@@ -78,11 +77,6 @@ public class UserController {
         return ResponseEntity.ok(userReadService.getUserProfileRequest(userId));
     }
 
-    //TODO: 해당 api는 안쓸듯..?
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> userInfo(@PathVariable("userId") final Integer userId){
-        return ResponseEntity.ok(Response.success(dummyUserInfoResponseDTO()));
-    }
 
     // TODO: 나중에 삭제하기
     @PostMapping("/dummy")
@@ -92,120 +86,4 @@ public class UserController {
         return ResponseEntity.ok(Response.success("dummy"));
     }
 
-    private static UserBodySpecEditResponseDTO dummyBodySpecEditResponse() {
-        UserBodySpecEditResponseDTO userBodySpecEditResponseDTO = UserBodySpecEditResponseDTO
-                .builder()
-                .userId(1L)
-                .bodyFat(9.8)
-                .weight(70.0)
-                .height(180.0)
-                .BMI(21.60)
-                .percentageFat(13.0)
-                .muscleMass(35.0)
-                .build();
-        return userBodySpecEditResponseDTO;
-    }
-
-
-    private static UserRecordEditResponseDTO dummyRecordEditResponseDTO(){
-        List<UserRecordEditResponseDTO.UserRecord> userRecords = new ArrayList<>();
-        userRecords.add(UserRecordEditResponseDTO.UserRecord.builder()
-                        .sportName("데드리프트")
-                        .record("160kg")
-                        .percentage("30%")
-                        .contents("/video/asf.mp4")
-                .build());
-        userRecords.add(UserRecordEditResponseDTO.UserRecord.builder()
-                .sportName("스쿼트")
-                .record("130kg")
-                .percentage("30%")
-                .contents("/video/asdf.mp4")
-                .build());
-        userRecords.add(UserRecordEditResponseDTO.UserRecord.builder()
-                .sportName("벤치프레스")
-                .record("100kg")
-                .percentage("30%")
-                .contents("/video/asfd.mp4")
-                .build());
-        UserRecordEditResponseDTO userRecordEditResponseDTO = UserRecordEditResponseDTO
-                .builder()
-                .userId(1L)
-                .userRecords(userRecords)
-                .build();
-        return userRecordEditResponseDTO;
-    }
-
-
-
-    private static UserProfileEditResponseDTO dummyUserProfileEditResponseDTO(){
-        UserProfileEditResponseDTO userProfileEditResponseDTO = UserProfileEditResponseDTO
-                .builder()
-                .userId(1L)
-                .userName("황지원")
-                .userProfile("/image/asdf.jpg")
-                .build();
-        return userProfileEditResponseDTO;
-    }
-
-    private static UserInfoResponseDTO dummyUserInfoResponseDTO(){
-        List<UserInfoResponseDTO.UserRecord> userRecords = new ArrayList<>();
-        userRecords.add(UserInfoResponseDTO.UserRecord.builder()
-                .sportName("데드리프트")
-                .record("160kg")
-                .percentage("30%")
-                .contents("/video/asf.mp4")
-                .build());
-        userRecords.add(UserInfoResponseDTO.UserRecord.builder()
-                .sportName("스쿼트")
-                .record("130kg")
-                .percentage("30%")
-                .contents("/video/asdf.mp4")
-                .build());
-        userRecords.add(UserInfoResponseDTO.UserRecord.builder()
-                .sportName("벤치프레스")
-                .record("100kg")
-                .percentage("30%")
-                .contents("/video/asfd.mp4")
-                .build());
-        return UserInfoResponseDTO.builder()
-                .userId(1l)
-                .name("황지원")
-                .profile("/image/asdf.jpg")
-                .height(180.0)
-                .weight(70.0)
-                .muscleMass(35.0)
-                .bodyFat(9.8)
-                .BMI(21.60)
-                .percentageFat(13.0)
-                .userPercentage("30%")
-                .userRecords(userRecords)
-                .build();
-    }
-
-    private static UserProfileRequestResponseDTO dummyUserProfileRequestResponseDTO(){
-        List<UserProfileRequestResponseDTO.UserContents> userContents = new ArrayList<>();
-        userContents.add(UserProfileRequestResponseDTO.UserContents.builder()
-                .address("asdfasdf.asdfasdf.dsf")
-                .contentId(1L)
-                .contentType("image")
-                .thumbnail("/image/asdf.jpg")
-                .build());
-        userContents.add(UserProfileRequestResponseDTO.UserContents.builder()
-                .address("asdfasdf.asdfasdf.dsf")
-                .contentId(2L)
-                .contentType("video")
-                .thumbnail("/image/asdf.mp4")
-                .build());
-        userContents.add(UserProfileRequestResponseDTO.UserContents.builder()
-                .address("asdfasdf.asdfasdf.dsf")
-                .contentId(3L)
-                .contentType("video")
-                .thumbnail("/image/asdf.avi")
-                .build());
-        return UserProfileRequestResponseDTO.builder()
-                .profileImage("/image/asdfasdf.jpg")
-                .userId(1L)
-                .userContents(userContents)
-                .build();
-    }
 }
