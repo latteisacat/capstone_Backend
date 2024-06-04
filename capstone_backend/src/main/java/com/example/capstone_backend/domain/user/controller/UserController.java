@@ -2,28 +2,20 @@ package com.example.capstone_backend.domain.user.controller;
 
 import com.example.capstone_backend.common.jwt.CustomUserDetails;
 import com.example.capstone_backend.common.util.Tools;
-import com.example.capstone_backend.domain.fileserver.service.FileValidator;
-import com.example.capstone_backend.domain.fileserver.service.FileWriteServiceTransactionManager;
+import com.example.capstone_backend.domain.user.ExerciseRepository;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
 import com.example.capstone_backend.domain.user.dto.request.UserBodySpecEditDTO;
 import com.example.capstone_backend.domain.user.dto.request.UserRecordEditDTO;
-import com.example.capstone_backend.domain.user.dto.response.*;
 import com.example.capstone_backend.common.Response;
-import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.service.UserReadService;
 import com.example.capstone_backend.domain.user.service.UserWriteService;
 import com.example.capstone_backend.domain.user.util.DummyUserDataCreator;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.S3Client;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,6 +23,7 @@ import java.util.List;
 public class UserController {
 
     private final UserInfoRepository userInfoRepository;
+    private final ExerciseRepository exerciseRepository;
 
     private final UserReadService userReadService;
     private final UserWriteService userWriteService;
@@ -82,7 +75,7 @@ public class UserController {
     @PostMapping("/dummy")
     public ResponseEntity<?> dummy(){
         DummyUserDataCreator dummy = new DummyUserDataCreator();
-        dummy.createDummy(userInfoRepository);
+        dummy.createDummy(userInfoRepository, exerciseRepository);
         return ResponseEntity.ok(Response.success("dummy"));
     }
 
