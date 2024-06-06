@@ -122,7 +122,7 @@ public class HomeReadService {
                 .competitor(0.0)
                 .build());
         Double percentageFat = null;
-        if (user.getFatMass() != null){
+        if (user.getFatMass() != null && user.getWeight() != null){
             percentageFat = user.getFatMass() / user.getWeight() * 100;
         }
         nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
