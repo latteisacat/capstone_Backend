@@ -121,9 +121,13 @@ public class HomeReadService {
                 .me(user.getBMI())
                 .competitor(0.0)
                 .build());
+        Double percentageFat = null;
+        if (user.getFatMass() != null){
+            percentageFat = user.getFatMass() / user.getWeight() * 100;
+        }
         nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
                 .name("체지방률")
-                .me(user.getFatMass() / user.getWeight() * 100)
+                .me(percentageFat)
                 .competitor(0.0)
                 .build());
         return nullCompetitors;
