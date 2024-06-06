@@ -72,6 +72,8 @@ public class HomeReadService {
         }
 
         List<UserCompetitorDTO> userCompetitorDTOList = getUserCompetitorDTOList(user, myCompetitors);
+        List<UserHomeResponseDTO.NullCompetitor> nullCompetitors = nullCompetitorList(user);
+
 
         return UserHomeResponseDTO.builder()
                 .userId(user.getId())
@@ -87,8 +89,44 @@ public class HomeReadService {
                 .competitors(userCompetitorDTOList)
                 .userRecords(userRecords)
                 .graph(averageRecords)
+                .nullGraph(nullCompetitors)
                 .recommendedUsers(recommendedUsers)
                 .build();
+    }
+
+    private List<UserHomeResponseDTO.NullCompetitor> nullCompetitorList(UserInfo user) {
+        List<UserHomeResponseDTO.NullCompetitor> nullCompetitors = new ArrayList<>();
+        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                .name("키")
+                .me(user.getHeight())
+                .competitor(0.0)
+                .build());
+        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                .name("몸무게")
+                .me(user.getWeight())
+                .competitor(0.0)
+                .build());
+        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                .name("근육량")
+                .me(user.getMuscleMass())
+                .competitor(0.0)
+                .build());
+        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                .name("체지방량")
+                .me(user.getFatMass())
+                .competitor(0.0)
+                .build());
+        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                .name("BMI")
+                .me(user.getBMI())
+                .competitor(0.0)
+                .build());
+        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                .name("체지방률")
+                .me(user.getFatMass() / user.getWeight() * 100)
+                .competitor(0.0)
+                .build());
+        return nullCompetitors;
     }
 
     private List<UserCompetitorDTO> getUserCompetitorDTOList(UserInfo user, List<Competitor> myCompetitors) {

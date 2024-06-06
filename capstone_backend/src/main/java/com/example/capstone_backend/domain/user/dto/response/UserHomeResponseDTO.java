@@ -22,6 +22,8 @@ public record UserHomeResponseDTO(
         List<UserCompetitorDTO> competitors,
         List<UserRecord> userRecords,
         List<AverageRecord> graph,
+
+        List<NullCompetitor> nullGraph,
         List<RecommendedUser> recommendedUsers
 ) {
     @Builder
@@ -56,5 +58,12 @@ public record UserHomeResponseDTO(
             String name,
             String me,
             String average
+    ){}
+
+    @Builder
+    public record NullCompetitor(
+            String name,
+            Double me,
+            Double competitor
     ){}
 }
