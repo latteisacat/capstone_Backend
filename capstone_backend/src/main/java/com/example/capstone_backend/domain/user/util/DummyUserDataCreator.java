@@ -117,11 +117,11 @@ public class DummyUserDataCreator {
     }
 
     public void createDummy(UserInfoRepository userInfoRepository, ExerciseRepository exerciseRepository) {
-        for (int i = 0; i < 500; ++i) {
+        for (int i = 0; i < 3000; ++i) {
             generateManDummy(i, userInfoRepository, exerciseRepository);
         }
 
-        for (int i = 0; i < 500; ++i) {
+        for (int i = 0; i < 3000; ++i) {
             generateWomanDummy(i, userInfoRepository, exerciseRepository);
         }
     }
