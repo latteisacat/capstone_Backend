@@ -15,7 +15,8 @@ import java.util.stream.IntStream;
 @SpringBootTest
 public class DummyTest {
 
-    public DummyUserDataCreator dummy = new DummyUserDataCreator();
+    @Autowired
+    DummyUserDataCreator dummy;
 
     @Autowired
     UserInfoRepository userInfoRepository;
@@ -89,7 +90,7 @@ public class DummyTest {
 
     @Test
     public void insertTest() {
-        dummy.createDummy(userInfoRepository);
+        dummy.createDummy();
     }
 
 }

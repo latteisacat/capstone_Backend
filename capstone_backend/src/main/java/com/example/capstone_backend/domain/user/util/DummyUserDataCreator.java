@@ -4,6 +4,7 @@ import com.example.capstone_backend.domain.user.ExerciseRepository;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
 import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,7 +12,12 @@ import java.util.Random;
 
 
 @Component
+@RequiredArgsConstructor
 public class DummyUserDataCreator {
+
+    private final UserInfoRepository userInfoRepository;
+
+    private final ExerciseRepository exerciseRepository;
 
     // 인바디 자료
     final double bmiMin = 16.5;
@@ -117,7 +123,7 @@ public class DummyUserDataCreator {
         return Math.round(ret * point) / point;
     }
 
-    public void createDummy(UserInfoRepository userInfoRepository, ExerciseRepository exerciseRepository) {
+    public void createDummy() {
         for (int i = 0; i < 100; ++i) {
             generateManDummy(i, userInfoRepository, exerciseRepository);
         }
