@@ -22,6 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/user")
 public class UserController {
 
+    private final UserInfoRepository userInfoRepository;
+    private final ExerciseRepository exerciseRepository;
+
     private final UserReadService userReadService;
     private final UserWriteService userWriteService;
 
@@ -69,11 +72,11 @@ public class UserController {
 
 
     // TODO: 나중에 삭제하기
-//    @PostMapping("/dummy")
-//    public ResponseEntity<?> dummy(){
-//        DummyUserDataCreator dummy = new DummyUserDataCreator();
-//        dummy.createDummy(userInfoRepository, exerciseRepository);
-//        return ResponseEntity.ok(Response.success("dummy"));
-//    }
+    @PostMapping("/dummy")
+    public ResponseEntity<?> dummy(){
+        DummyUserDataCreator dummy = new DummyUserDataCreator();
+        dummy.createDummy(userInfoRepository, exerciseRepository);
+        return ResponseEntity.ok(Response.success("dummy"));
+    }
 
 }

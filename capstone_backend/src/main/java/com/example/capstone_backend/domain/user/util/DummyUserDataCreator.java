@@ -16,7 +16,8 @@ public class DummyUserDataCreator {
     // 인바디 자료
     final double bmiMin = 16.5;
     final double bmiMax = 34.5;
-    final double muscleMassPercentAverage = 42.00;
+    final double manMuscleMassPercentAverage = 42.00;
+    final double womanMuscleMassPercentAverage = 35.00;
 
     final double manWeightAverage = 75.33;
     final double manHeightAverage = 172.12;
@@ -117,11 +118,11 @@ public class DummyUserDataCreator {
     }
 
     public void createDummy(UserInfoRepository userInfoRepository, ExerciseRepository exerciseRepository) {
-        for (int i = 0; i < 3000; ++i) {
+        for (int i = 0; i < 100; ++i) {
             generateManDummy(i, userInfoRepository, exerciseRepository);
         }
 
-        for (int i = 0; i < 3000; ++i) {
+        for (int i = 0; i < 100; ++i) {
             generateWomanDummy(i, userInfoRepository, exerciseRepository);
         }
     }
@@ -137,7 +138,7 @@ public class DummyUserDataCreator {
             weight = generateRandomWeight(height, "여");
             bmi = calculateBmi(height, weight);
             fatMass = generateRandomFatMass(weight, "여");
-            muscleMass = generateRandomMuscleMass(weight, fatMass);
+            muscleMass = generateRandomMuscleMass(weight, fatMass, "여");
         } while (isOutlier(fatMass, muscleMass, weight, height, bmi, "여"));
 
         double bodyScore = Math.round(calculateBodyScore(height, weight, fatMass, "여"));
@@ -170,7 +171,7 @@ public class DummyUserDataCreator {
             weight = generateRandomWeight(height, "남");
             bmi = calculateBmi(height, weight);
             fatMass = generateRandomFatMass(weight, "남");
-            muscleMass = generateRandomMuscleMass(weight, fatMass);
+            muscleMass = generateRandomMuscleMass(weight, fatMass, "남");
         } while (isOutlier(fatMass, muscleMass, weight, height, bmi, "남"));
 
         double bodyScore = Math.round(calculateBodyScore(height, weight, fatMass, "남"));
@@ -202,7 +203,7 @@ public class DummyUserDataCreator {
             int weight = (int) (userInfo.getWeight() / 5) - 10; // 몸무게별 구간갯수가 10개임
             double musclePer = userInfo.getMuscleMass() / userInfo.getWeight();
 
-            double dev = musclePer * 100 - muscleMassPercentAverage;
+            double dev = musclePer * 100 - manMuscleMassPercentAverage;
             double record = 0;
             switch (exName) {
                 case "벤치프레스":
@@ -232,7 +233,7 @@ public class DummyUserDataCreator {
             int weight = (int) (userInfo.getWeight() / 5) - 8; // 몸무게별 구간갯수가 8개임
             double musclePer = userInfo.getMuscleMass() / userInfo.getWeight();
 
-            double dev = musclePer * 100 - muscleMassPercentAverage;
+            double dev = musclePer * 100 - womanMuscleMassPercentAverage;
             double record = 0;
             switch (exName) {
                 case "벤치프레스":
@@ -285,7 +286,7 @@ public class DummyUserDataCreator {
         return Math.round(fatMass * 10.0) / 10.0;
     }
 
-    private double generateRandomMuscleMass(double weight, double fatmass) {
+    private double generateRandomMuscleMass(double weight, double fatmass, String sex) {
         // 낮은 체지방 기준
         double lowFat = 17;
 
@@ -293,9 +294,19 @@ public class DummyUserDataCreator {
         double point = scale(0, 8, (lowFat - (fatmass / weight) * 100) * 10);
 
         if (point == 0) {
-            weight = weight * generateRandomValueWithStdDev(muscleMassPercentAverage, 4, 2) / 100;
+            if(sex == "남"){
+                weight = weight * generateRandomValueWithStdDev(manMuscleMassPercentAverage, 4, 2) / 100;
+            }
+            else{
+                weight = weight * generateRandomValueWithStdDev(womanMuscleMassPercentAverage, 4, 2) / 100;
+            }
         } else {
-            weight = weight * generateRandomValueWithStdDev(muscleMassPercentAverage + point, 4, 2) / 100;
+            if (sex == "남"){
+                weight = weight * generateRandomValueWithStdDev(manMuscleMassPercentAverage + point, 4, 2) / 100;
+            }
+            else{
+                weight = weight * generateRandomValueWithStdDev(womanMuscleMassPercentAverage + point, 4, 2) / 100;
+            }
         }
 
         return Math.round(weight * 100.0) / 100.0;
