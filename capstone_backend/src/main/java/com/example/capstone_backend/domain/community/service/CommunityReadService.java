@@ -29,10 +29,10 @@ public class CommunityReadService {
         return CommunityResponseDTO.of(contents, contents.hasNext());
     }
 
-    public ContentResponseDTO getContent(final Long contentId, final CustomUserDetails userDetails){
+    public ContentResponseDTO getContent(final Long contentId, final UserInfo connectedUserInfo){
         Contents content = contentsRepository.findById(contentId).orElseThrow();
         List<Comments> comments = commentsRepository.findAllByContents(content);
-        return ContentResponseDTO.of(content, comments, userDetails.getUserInfo());
+        return ContentResponseDTO.of(content, comments, connectedUserInfo);
     }
 
 }

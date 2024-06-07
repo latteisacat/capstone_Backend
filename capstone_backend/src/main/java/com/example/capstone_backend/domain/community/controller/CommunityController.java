@@ -52,10 +52,10 @@ public class CommunityController {
             @PathVariable final Long contentId,
             @AuthenticationPrincipal final CustomUserDetails userDetails
     ) {
-        if (userDetails == null){
-            throw new IllegalArgumentException("user not found or token is null");
+        if(userDetails == null){
+            throw new IllegalArgumentException("token is null");
         }
-        return ResponseEntity.ok(Response.success(communityReadService.getContent(contentId, userDetails)));
+        return ResponseEntity.ok(Response.success(communityReadService.getContent(contentId, userDetails.getUserInfo())));
     }
 
     @PostMapping("/{contentId}/comment")

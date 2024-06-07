@@ -7,6 +7,7 @@ import com.example.capstone_backend.domain.home.service.HomeReadService;
 import com.example.capstone_backend.domain.home.service.HomeWriteService;
 import com.example.capstone_backend.domain.user.dto.request.UserCompetitorAddDTO;
 import com.example.capstone_backend.common.Response;
+import com.example.capstone_backend.domain.user.dto.request.UserCompetitorDeleteDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,11 +30,21 @@ public class HomeController {
 
     @PostMapping("/{userId}/addCompetitor")
     public ResponseEntity<?> addCompetitor(
-            @PathVariable("userId") final UserCompetitorAddDTO userCompetitorAddDTO,
+            @RequestBody final UserCompetitorAddDTO userCompetitorAddDTO,
             @AuthenticationPrincipal final CustomUserDetails userDetails
     ){
         Tools.invalidUserCheck(userDetails, userCompetitorAddDTO.userId());
         homeWriteService.addCompetitor(userCompetitorAddDTO, userDetails.getUserInfo());
+        return ResponseEntity.ok(Response.success(null));
+    }
+
+    @DeleteMapping("/{userId}/deleteCompetitor")
+    public ResponseEntity<?> deleteCompetitor(
+            @RequestBody final UserCompetitorDeleteDTO userCompetitorDeleteDTO,
+            @AuthenticationPrincipal final CustomUserDetails userDetails
+    ){
+        Tools.invalidUserCheck(userDetails, userCompetitorDeleteDTO.userId());
+        homeWriteService.deleteCompetitor(userCompetitorDeleteDTO, userDetails.getUserInfo());
         return ResponseEntity.ok(Response.success(null));
     }
 }

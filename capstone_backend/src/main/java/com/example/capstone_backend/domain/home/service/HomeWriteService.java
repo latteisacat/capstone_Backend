@@ -4,6 +4,7 @@ package com.example.capstone_backend.domain.home.service;
 import com.example.capstone_backend.domain.user.CompetitorRepository;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
 import com.example.capstone_backend.domain.user.dto.request.UserCompetitorAddDTO;
+import com.example.capstone_backend.domain.user.dto.request.UserCompetitorDeleteDTO;
 import com.example.capstone_backend.domain.user.entity.Competitor;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +29,15 @@ public class HomeWriteService {
                         .toUserId(
                                 UserInfoRepository.findById(userCompetitorAddDTO.competitorId()).orElseThrow())
                 .build());
+    }
+
+    public void deleteCompetitor(
+            UserCompetitorDeleteDTO userCompetitorDeleteDTO,
+            UserInfo userInfo
+    ){
+        competitorRepository.deleteByFromUserIdAndToUserId(
+                userInfo,
+                UserInfoRepository.findById(userCompetitorDeleteDTO.competitorId()).orElseThrow()
+        );
     }
 }

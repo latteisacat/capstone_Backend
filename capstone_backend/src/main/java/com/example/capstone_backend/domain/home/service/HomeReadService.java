@@ -60,16 +60,15 @@ public class HomeReadService {
         Double range = 0.15;
         Integer count = 0;
         List<UserHomeResponseDTO.RecommendedUser> recommendedUsers = new ArrayList<>();
-        if (userRecords.size() != 0){
-            do{
-                count += 1;
-                recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), range)
-                        .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
-                recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
-                System.out.println("사이즈 : " + recommendedUsers.size());
-                range += 0.05;
-            }while(recommendedUsers.size() == 0 && count < 5);
-        }
+        do{
+            count += 1;
+            recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), range)
+                    .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
+            recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
+            System.out.println("사이즈 : " + recommendedUsers.size());
+            range += 0.05;
+        }while(recommendedUsers.size() == 0 && count < 5);
+
 
         List<UserCompetitorDTO> userCompetitorDTOList = getUserCompetitorDTOList(user, myCompetitors);
         List<UserHomeResponseDTO.NullCompetitor> nullCompetitors = nullCompetitorList(user);
