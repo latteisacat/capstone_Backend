@@ -14,6 +14,8 @@ import java.util.Random;
 @Component
 @RequiredArgsConstructor
 public class DummyUserDataCreator {
+    static int onOff = 1;
+    static int count = 0;
 
     private final UserInfoRepository userInfoRepository;
 
@@ -37,6 +39,10 @@ public class DummyUserDataCreator {
 
 
     Random random = new Random();
+
+    public static int getOnOff() {
+        return onOff;
+    }
 
     // male weight 50 ~ 140
     private final int[][] maleBenchScale = {
@@ -123,21 +129,25 @@ public class DummyUserDataCreator {
         return Math.round(ret * point) / point;
     }
 
-    public void createDummy() {
-        for (int i = 0; i < 100; ++i) {
-            generateManDummy(i, userInfoRepository, exerciseRepository);
-        }
+    public void dummyOnOff(){
+        onOff = 1 - onOff;
+    }
 
-        for (int i = 0; i < 100; ++i) {
-            generateWomanDummy(i, userInfoRepository, exerciseRepository);
+    public void createDummy() {
+        if(onOff == 1){
+            for (int i = 0; i < 100; ++i) {
+                generateManDummy(count + i, userInfoRepository, exerciseRepository);
+            }
+
+            for (int i = 0; i < 100; ++i) {
+                generateWomanDummy(count + i, userInfoRepository, exerciseRepository);
+            }
+            count += 100;
         }
     }
 
     private void generateWomanDummy(int i, UserInfoRepository userInfoRepository, ExerciseRepository exerciseRepository) {
         double weight, bmi, fatMass, height, muscleMass;
-        int[][] benchScale = getFemaleBenchScale();
-        int[][] squatScale = getFemaleSquatScale();
-        int[][] deadScale = getFemaleDeadScale();
 
         do {
             height = generateRandomValueWithStdDev(womanHeightAverage, 15, 1);
