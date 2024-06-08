@@ -64,7 +64,7 @@ public class HomeReadService {
         List<UserHomeResponseDTO.RecommendedUser> recommendedUsers = new ArrayList<>();
         do{
             count += 1;
-            recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), range)
+            recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), user.getHeight(), range)
                     .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
             recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
             System.out.println("사이즈 : " + recommendedUsers.size());
