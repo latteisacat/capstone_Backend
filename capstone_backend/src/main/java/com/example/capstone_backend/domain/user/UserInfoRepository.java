@@ -22,7 +22,7 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
 
     @Query("select u from UserInfo u" +
             " where  :bodyScore*(1.0 - :range) < u.bodyScore and u.bodyScore < :bodyScore*(1.0 + :range) and u.sex = :sex"
-            +" and u.height > :height - 7 and u.height < :height + 7"
+            +" and u.height > :height - 7.0 and u.height < :height + 7.0 "
             + " and u.isDummy = false " + "and u.id != :userId "
     )
     List<UserInfo> getRecommendedUsers(
