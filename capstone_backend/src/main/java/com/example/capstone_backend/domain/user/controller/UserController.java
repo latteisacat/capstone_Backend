@@ -76,5 +76,10 @@ public class UserController {
         dummyUserDataCreator.createDummy();
         return ResponseEntity.ok(Response.success("dummy"));
     }
+    @PostMapping("/dummy/onoff")
+    public ResponseEntity<?> dummyOnOff(){
+        dummyUserDataCreator.dummyOnOff();
+        return ResponseEntity.ok(Response.success(dummyUserDataCreator.getOnOff()));
+    }
 
 }
