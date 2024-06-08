@@ -39,6 +39,7 @@ public class HomeReadService {
         Double userPercentage;
         if (user.getFatMass() != null){
             percentageFat = user.getFatMass() / user.getWeight() * 100;
+            percentageFat = Double.parseDouble(String.format("%.3f", percentageFat));
         }
         else{
             percentageFat = null;
@@ -47,6 +48,7 @@ public class HomeReadService {
         if (user.getBodyScore() != null){
             Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUserCount(user.getBodyScore(), sex);
             userPercentage = (double) betterBodyScoreUserCount / userCount * 100;
+            userPercentage = Double.parseDouble(String.format("%.3f", userPercentage));
         }
         else{
             userPercentage = null;
@@ -123,6 +125,7 @@ public class HomeReadService {
         Double percentageFat = null;
         if (user.getFatMass() != null && user.getWeight() != null){
             percentageFat = user.getFatMass() / user.getWeight() * 100;
+            percentageFat = Double.parseDouble(String.format("%.3f", percentageFat));
         }
         nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
                 .name("체지방률")
@@ -142,8 +145,10 @@ public class HomeReadService {
             userCompare.add(UserCompetitorDTO.CompareDetail.of("체지방량", user.getFatMass(), competitor.getToUserId().getFatMass()));
             userCompare.add(UserCompetitorDTO.CompareDetail.of("BMI", user.getBMI(), competitor.getToUserId().getBMI()));
             userCompare.add(UserCompetitorDTO.CompareDetail.of(
-                    "체지방률", user.getFatMass() / user.getWeight() * 100,
-                    competitor.getToUserId().getFatMass() / competitor.getToUserId().getWeight() * 100));
+                    "체지방률",
+                    Double.parseDouble(String.format("%.3f", user.getFatMass() / user.getWeight() * 100)),
+                    Double.parseDouble(String.format("%.3f", competitor.getToUserId().getFatMass() / competitor.getToUserId().getWeight() * 100))
+            ));
             userCompetitorDTOList.add(UserCompetitorDTO.builder()
                             .userId(competitor.getToUserId().getId())
                             .userProfile(competitor.getToUserId().getUserProfile())
@@ -177,7 +182,7 @@ public class HomeReadService {
             userRecords.add(UserHomeResponseDTO.UserRecord.builder()
                             .sportName(exercise.getExerciseName())
                             .record(exercise.getRecord().toString() + "kg")
-                            .percentage(exercisePercentage + "%")
+                            .percentage(String.format("%.3f", exercisePercentage) + "%")
                     .build());
         }
         return userRecords;

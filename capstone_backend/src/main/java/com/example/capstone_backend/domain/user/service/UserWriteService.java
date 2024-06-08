@@ -49,6 +49,9 @@ public class UserWriteService {
 
         userInfoRepository.save(user);
 
+        double percentageFat = user.getFatMass() / user.getWeight() * 100;
+        percentageFat = Double.parseDouble(String.format("%.3f", percentageFat));
+
         return UserBodySpecEditResponseDTO.builder()
                 .userId(user.getId())
                 .height(userBodySpecEditDTO.height())
@@ -56,7 +59,7 @@ public class UserWriteService {
                 .muscleMass(userBodySpecEditDTO.muscleMass())
                 .bodyFat(userBodySpecEditDTO.fatMass())
                 .BMI(BMI)
-                .percentageFat(userBodySpecEditDTO.fatMass() / userBodySpecEditDTO.weight() * 100)
+                .percentageFat(percentageFat)
                 .build();
     }
 
@@ -100,7 +103,8 @@ public class UserWriteService {
                     Long betterExerciseUserCount = exerciseRepository.getBetterExerciseUserCount(
                             exercise.getExerciseName(), exercise.getRecord(), userInfo.getSex()
                     );
-                    return (double) betterExerciseUserCount / exerciseUserCount * 100;
+                    Double percentage = (double) betterExerciseUserCount / exerciseUserCount * 100;
+                    return Double.parseDouble(String.format("%.3f", percentage));
                 })
                 .toList();
         return UserRecordEditResponseDTO.builder()
