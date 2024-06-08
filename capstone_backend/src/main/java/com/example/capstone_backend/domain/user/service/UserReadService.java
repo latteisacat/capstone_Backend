@@ -2,8 +2,10 @@ package com.example.capstone_backend.domain.user.service;
 
 import com.example.capstone_backend.domain.fileserver.ContentsRepository;
 import com.example.capstone_backend.domain.fileserver.entity.Contents;
+import com.example.capstone_backend.domain.user.ExerciseRepository;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
 import com.example.capstone_backend.domain.user.dto.response.UserProfileRequestResponseDTO;
+import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,14 +23,19 @@ public class UserReadService {
 
     private final UserInfoRepository userInfoRepository;
     private final ContentsRepository contentsRepository;
+    private final ExerciseRepository exerciseRepository;
 
     public UserProfileRequestResponseDTO getUserProfileRequest(final Long userId){
         UserInfo user = userInfoRepository.findById(userId).orElseThrow();
         List<Contents> userContents = contentsRepository.findAllByUserId(user);
+        List<Exercise> userExercise = exerciseRepository.findAllByUser(user);
+
         return UserProfileRequestResponseDTO.of(
                 user.getUserProfile(),
                 user.getId(),
-                userContents
+                user.getUserName(),
+                userContents,
+                userExercise
         );
     }
 }

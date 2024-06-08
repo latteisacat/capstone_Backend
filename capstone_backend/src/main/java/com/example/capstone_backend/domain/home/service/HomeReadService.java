@@ -119,7 +119,7 @@ public class HomeReadService {
                 .build());
         nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
                 .name("BMI")
-                .me(user.getBMI())
+                .me(Double.parseDouble(String.format("%.3f", user.getBMI())))
                 .competitor(0.0)
                 .build());
         Double percentageFat = null;
@@ -143,7 +143,9 @@ public class HomeReadService {
             userCompare.add(UserCompetitorDTO.CompareDetail.of("몸무게", user.getWeight(), competitor.getToUserId().getWeight()));
             userCompare.add(UserCompetitorDTO.CompareDetail.of("근육량", user.getMuscleMass(), competitor.getToUserId().getMuscleMass()));
             userCompare.add(UserCompetitorDTO.CompareDetail.of("체지방량", user.getFatMass(), competitor.getToUserId().getFatMass()));
-            userCompare.add(UserCompetitorDTO.CompareDetail.of("BMI", user.getBMI(), competitor.getToUserId().getBMI()));
+            userCompare.add(UserCompetitorDTO.CompareDetail.of("BMI", Double.parseDouble(String.format("%.3f", user.getBMI())),
+                    Double.parseDouble(String.format("%.3f", competitor.getToUserId().getBMI()))
+                    ));
             userCompare.add(UserCompetitorDTO.CompareDetail.of(
                     "체지방률",
                     Double.parseDouble(String.format("%.3f", user.getFatMass() / user.getWeight() * 100)),

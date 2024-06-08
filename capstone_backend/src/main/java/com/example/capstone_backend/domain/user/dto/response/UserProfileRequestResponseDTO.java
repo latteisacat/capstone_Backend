@@ -2,6 +2,7 @@ package com.example.capstone_backend.domain.user.dto.response;
 
 
 import com.example.capstone_backend.domain.fileserver.entity.Contents;
+import com.example.capstone_backend.domain.user.entity.Exercise;
 import lombok.Builder;
 import org.springframework.data.domain.Slice;
 
@@ -11,7 +12,9 @@ import java.util.List;
 public record UserProfileRequestResponseDTO(
         String profileImage,
         Long userId,
-        List<UserContents> userContents
+        String userName,
+        List<UserContents> userContents,
+        List<UserExerciseRecord> userExerciseRecords
 
 ) {
     @Builder
@@ -31,15 +34,35 @@ public record UserProfileRequestResponseDTO(
         }
 
     }
+
+    @Builder
+    public record UserExerciseRecord(
+            String exerciseName,
+            String record,
+            String video
+    ) {
+        // TODO : 나중에 kg외에 다른 것도 파싱해야함.
+        public static UserExerciseRecord of(Exercise exercise) {
+            return UserExerciseRecord.builder()
+                    .exerciseName(exercise.getExerciseName())
+                    .record(exercise.getRecord() + "kg")
+                    .video(exercise.getContents())
+                    .build();
+        }
+    }
     public static UserProfileRequestResponseDTO of(
             final String profileImage,
             final Long userId,
-            final List<Contents> userContents
+            final String userName,
+            final List<Contents> userContents,
+            final List<Exercise> userExercises
     ) {
         return new UserProfileRequestResponseDTO(
                 profileImage,
                 userId,
-                userContents.stream().map(UserContents::of).toList()
+                userName,
+                userContents.stream().map(UserContents::of).toList(),
+                userExercises.stream().map(UserExerciseRecord::of).toList()
         );
     }
 
