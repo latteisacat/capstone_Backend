@@ -88,7 +88,9 @@ public class FileWriteServiceTransactionManager {
                         .contents(fileUrl)
                         .build();
                 userExercises.add(saveExercise);
-                index = 0;
+                index = IntStream.range(0, userExercises.size())
+                        .filter(i -> userExercises.get(i).getExerciseName().equals(userRecordEditDTO.exerciseName()))
+                        .findFirst().orElseThrow(() -> new RuntimeException("Something is wrong while saving exercise record."));
                 exerciseRepository.save(saveExercise);
             }
             else{

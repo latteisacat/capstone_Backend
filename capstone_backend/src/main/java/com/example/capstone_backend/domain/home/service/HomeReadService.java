@@ -74,7 +74,7 @@ public class HomeReadService {
             recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
             System.out.println("사이즈 : " + recommendedUsers.size());
             range += 0.05;
-        }while(recommendedUsers.size() == 0 && count < 5);
+        }while(recommendedUsers.size() == 0 && count < 2);
 
 
         List<UserCompetitorDTO> userCompetitorDTOList = getUserCompetitorDTOList(user, myCompetitors);
