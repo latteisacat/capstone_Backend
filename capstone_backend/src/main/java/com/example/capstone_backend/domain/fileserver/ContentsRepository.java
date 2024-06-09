@@ -25,4 +25,11 @@ public interface ContentsRepository extends JpaRepository<Contents, Long> {
             " where c.userId = :userId "+
             " order by c.createdAt desc ")
     List<Contents> findAllByUserId(@Param("userId") UserInfo userId);
+
+
+    @Query(" select c " +
+            " from Contents c " +
+            " where c.datatype = 'video' "+
+            " order by rand() ")
+    List<Contents> findAllVideos();
 }

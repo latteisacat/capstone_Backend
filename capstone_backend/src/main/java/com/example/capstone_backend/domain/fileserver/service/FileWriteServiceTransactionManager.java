@@ -88,12 +88,24 @@ public class FileWriteServiceTransactionManager {
                         .contents(fileUrl)
                         .build();
                 userExercises.add(saveExercise);
+                index = 0;
                 exerciseRepository.save(saveExercise);
             }
             else{
-                fileRepository.overwrite(file, Tools.getFileNameFromUrl(userExercises.get(index).getContents()));
+                fileUrl = fileRepository.save(file);
+                savedFileUrls.add(fileUrl);
+                userExercises.get(index).setContents(fileUrl);
                 userExercises.get(index).setRecord(record);
             }
+            contentsRepository.save(
+                    Contents.builder()
+                            .userId(userInfo)
+                            .contents(fileUrl)
+                            .contentText(userExercises.get(index).getExerciseName() + " 운동 기록 인증")
+                            .thumbnail(Tools.thumbnailUrl(fileUrl))
+                            .datatype("video")
+                            .build()
+            );
         }
         catch (final RuntimeException e) {
             fileRepository.deleteAll(savedFileUrls);

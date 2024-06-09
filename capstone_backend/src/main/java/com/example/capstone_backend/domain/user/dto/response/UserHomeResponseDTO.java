@@ -1,5 +1,6 @@
 package com.example.capstone_backend.domain.user.dto.response;
 
+import com.example.capstone_backend.domain.fileserver.entity.Contents;
 import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
 import lombok.Builder;
@@ -22,6 +23,8 @@ public record UserHomeResponseDTO(
         List<UserCompetitorDTO> competitors,
         List<UserRecord> userRecords,
         List<AverageRecord> graph,
+
+        List<ShortForm> contents,
 
         List<NullCompetitor> nullGraph,
         List<RecommendedUser> recommendedUsers
@@ -66,4 +69,27 @@ public record UserHomeResponseDTO(
             Double me,
             Double competitor
     ){}
+
+    @Builder
+    public record ShortForm(
+            String address,
+            Long contentId,
+            Long userId,
+            String userName,
+            String userProfile,
+            String contentType,
+            String thumbnail
+    ){
+        public static ShortForm of(final Contents contents){
+            return ShortForm.builder()
+                    .address(contents.getContents())
+                    .contentId(contents.getId())
+                    .userId(contents.getUserId().getId())
+                    .userName(contents.getUserId().getUserName())
+                    .userProfile(contents.getUserId().getUserProfile())
+                    .contentType(contents.getDatatype())
+                    .thumbnail(contents.getThumbnail())
+                    .build();
+        }
+    }
 }

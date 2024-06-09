@@ -1,6 +1,7 @@
 package com.example.capstone_backend.domain.home.service;
 
 
+import com.example.capstone_backend.domain.fileserver.ContentsRepository;
 import com.example.capstone_backend.domain.user.CompetitorRepository;
 import com.example.capstone_backend.domain.user.ExerciseRepository;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
@@ -24,12 +25,13 @@ public class HomeReadService {
     final private UserInfoRepository userInfoRepository;
     final private ExerciseRepository exerciseRepository;
     final private CompetitorRepository competitorRepository;
+    final private ContentsRepository contentsRepository;
 
     public UserHomeResponseDTO getUserHome(final Long userId){
         UserInfo user = userInfoRepository.findById(userId).orElseThrow();
         List<Competitor> myCompetitors = competitorRepository.findAllByFromUserId(user);
         List<Exercise> myExerciseList = exerciseRepository.findAllByUser(user);
-
+        List<UserHomeResponseDTO.ShortForm> shortForms = contentsRepository.findAllVideos().stream().map(UserHomeResponseDTO.ShortForm::of).toList();
         // 이미 등록된 경쟁자를 리스트에서 제외하기 위함.
         List<Long> competitorIds = myCompetitors.stream().map(competitor -> competitor.getToUserId().getId()).toList();
         String sex = user.getSex();
@@ -37,6 +39,8 @@ public class HomeReadService {
         Long userCount = userInfoRepository.userCount(sex);
         Double percentageFat;
         Double userPercentage;
+        String strUserPercentage = null;
+
         if (user.getFatMass() != null){
             percentageFat = user.getFatMass() / user.getWeight() * 100;
             percentageFat = Double.parseDouble(String.format("%.3f", percentageFat));
@@ -49,6 +53,7 @@ public class HomeReadService {
             Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUserCount(user.getBodyScore(), sex);
             userPercentage = (double) betterBodyScoreUserCount / userCount * 100;
             userPercentage = Double.parseDouble(String.format("%.3f", userPercentage));
+            strUserPercentage = userPercentage + "%";
         }
         else{
             userPercentage = null;
@@ -86,9 +91,10 @@ public class HomeReadService {
                 .muscleMass(user.getMuscleMass())
                 .bodyFat(user.getFatMass())
                 .percentageFat(percentageFat)
-                .userPercentage(userPercentage+"%")
+                .userPercentage(strUserPercentage)
                 .competitors(userCompetitorDTOList)
                 .userRecords(userRecords)
+                .contents(shortForms)
                 .graph(averageRecords)
                 .nullGraph(nullCompetitors)
                 .recommendedUsers(recommendedUsers)
@@ -97,41 +103,48 @@ public class HomeReadService {
 
     private List<UserHomeResponseDTO.NullCompetitor> nullCompetitorList(UserInfo user) {
         List<UserHomeResponseDTO.NullCompetitor> nullCompetitors = new ArrayList<>();
-        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
-                .name("키")
-                .me(user.getHeight())
-                .competitor(0.0)
-                .build());
-        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
-                .name("몸무게")
-                .me(user.getWeight())
-                .competitor(0.0)
-                .build());
-        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
-                .name("근육량")
-                .me(user.getMuscleMass())
-                .competitor(0.0)
-                .build());
-        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
-                .name("체지방량")
-                .me(user.getFatMass())
-                .competitor(0.0)
-                .build());
-        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
-                .name("BMI")
-                .me(Double.parseDouble(String.format("%.3f", user.getBMI())))
-                .competitor(0.0)
-                .build());
-        Double percentageFat = null;
-        if (user.getFatMass() != null && user.getWeight() != null){
+        if(
+                user.getHeight()!= null &&
+                user.getWeight() != null &&
+                user.getMuscleMass() != null &&
+                user.getFatMass() != null &&
+                user.getBMI() != null
+        ){
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("키")
+                    .me(user.getHeight())
+                    .competitor(0.0)
+                    .build());
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("몸무게")
+                    .me(user.getWeight())
+                    .competitor(0.0)
+                    .build());
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("근육량")
+                    .me(user.getMuscleMass())
+                    .competitor(0.0)
+                    .build());
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("체지방량")
+                    .me(user.getFatMass())
+                    .competitor(0.0)
+                    .build());
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("BMI")
+                    .me(Double.parseDouble(String.format("%.3f", user.getBMI())))
+                    .competitor(0.0)
+                    .build());
+            Double percentageFat = null;
             percentageFat = user.getFatMass() / user.getWeight() * 100;
             percentageFat = Double.parseDouble(String.format("%.3f", percentageFat));
+
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("체지방률")
+                    .me(percentageFat)
+                    .competitor(0.0)
+                    .build());
         }
-        nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
-                .name("체지방률")
-                .me(percentageFat)
-                .competitor(0.0)
-                .build());
         return nullCompetitors;
     }
 
