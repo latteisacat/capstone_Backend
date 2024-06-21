@@ -65,7 +65,7 @@ public class Tools {
         if (userDetails == null){
             throw new IllegalArgumentException("user not found with userId: " + userId + "or token is null");
         }
-        else if(userDetails.getUserInfo().getId() != userId){
+        else if(!userDetails.getUserInfo().getId().equals(userId)){
             throw new IllegalArgumentException("user not matched with userId: " + userId);
         }
     }

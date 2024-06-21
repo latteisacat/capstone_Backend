@@ -4,6 +4,7 @@ import com.example.capstone_backend.domain.user.ExerciseRepository;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
 import com.example.capstone_backend.domain.user.entity.Exercise;
 import com.example.capstone_backend.domain.user.entity.UserInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,12 +12,20 @@ import java.util.Random;
 
 
 @Component
+@RequiredArgsConstructor
 public class DummyUserDataCreator {
+    static int onOff = 1;
+    static int count = 0;
+
+    private final UserInfoRepository userInfoRepository;
+
+    private final ExerciseRepository exerciseRepository;
 
     // 인바디 자료
     final double bmiMin = 16.5;
     final double bmiMax = 34.5;
-    final double muscleMassPercentAverage = 42.00;
+    final double manMuscleMassPercentAverage = 42.00;
+    final double womanMuscleMassPercentAverage = 35.00;
 
     final double manWeightAverage = 75.33;
     final double manHeightAverage = 172.12;
@@ -30,6 +39,10 @@ public class DummyUserDataCreator {
 
 
     Random random = new Random();
+
+    public static int getOnOff() {
+        return onOff;
+    }
 
     // male weight 50 ~ 140
     private final int[][] maleBenchScale = {
@@ -51,6 +64,27 @@ public class DummyUserDataCreator {
             {67, 190}, {73, 199}, {79, 208}, {84, 217}, {89, 226},
             {94, 233}, {99, 241}, {104, 249}, {109, 256}, {114, 264},
             {119, 271}, {124, 277}, {129, 284}, {134, 291}
+    };
+
+    private final int[][] maleShoulderScale = {
+            {12, 60}, {15, 65}, {17, 71}, {20, 76}, {22, 81},
+            {25, 85}, {28, 90}, {30, 94}, {33, 98}, {35, 102},
+            {37, 106}, {40, 110}, {41, 113}, {44, 117}, {45, 120},
+            {48, 124}, {50, 127}, {52, 131}, {54, 134}
+    };
+
+    private final int[][] maleDumbbellScale = {
+            {2, 33}, {3, 35}, {4, 37}, {4, 39}, {5, 40},
+            {5, 42}, {5, 43}, {6, 45}, {7, 46}, {7, 47},
+            {7, 49}, {8, 50}, {8, 51}, {9, 53}, {9, 54},
+            {10, 55}, {10, 56}, {10, 57}, {11, 58}
+    };
+
+    private final int[][] maleBarbellScale = {
+            {9, 64}, {11, 69}, {13, 73}, {14, 78}, {16, 82},
+            {18, 85}, {19, 89}, {21, 93}, {23, 96}, {24, 99},
+            {26, 102}, {27, 105}, {29, 108}, {30, 111}, {32, 114},
+            {33, 116}, {34, 119}, {36, 121}, {37, 124}
     };
 
     // female start from 40 ~ 120
@@ -75,29 +109,26 @@ public class DummyUserDataCreator {
             {54, 167}, {56, 170}
     };
 
-    public int[][] getMaleBenchScale() {
-        return maleBenchScale;
-    }
+    private final int[][] femaleShoulderScale = {
+            {5, 40}, {6, 44}, {8, 47}, {9, 49}, {10, 51},
+            {11, 53}, {12, 55}, {13, 57}, {14, 59}, {15, 61},
+            {16, 63}, {17, 65}, {17, 66}, {18, 68}, {19, 69},
+            {20, 72}, {20, 73}, {20, 74}
+    };
 
-    public int[][] getMaleSquatScale() {
-        return maleSquatScale;
-    }
+    private final int[][] femaleDumbbellScale = {
+            {2, 24}, {2, 25}, {3, 27}, {3, 28}, {3, 29},
+            {4, 30}, {4, 31}, {4, 32}, {5, 33}, {5, 34},
+            {5, 35}, {6, 35}, {6, 36}, {6, 37}, {7, 38},
+            {7, 38}, {7, 39}
+    };
 
-    public int[][] getMaleDeadScale() {
-        return maleDeadScale;
-    }
-
-    public int[][] getFemaleBenchScale() {
-        return femaleBenchScale;
-    }
-
-    public int[][] getFemaleSquatScale() {
-        return femaleSquatScale;
-    }
-
-    public int[][] getFemaleDeadScale() {
-        return femaleDeadScale;
-    }
+    private final int[][] femaleBarbellScale = {
+            {3, 41}, {4, 44}, {5, 47}, {5, 49}, {6, 51},
+            {7, 54}, {8, 56}, {8, 57}, {9, 59}, {10, 61},
+            {10, 63}, {11, 64}, {12, 66}, {12, 67}, {13, 69},
+            {14, 70}, {14, 71}
+    };
 
     /**
      * 최소, 최대, 표준편차, 소수점
@@ -116,28 +147,32 @@ public class DummyUserDataCreator {
         return Math.round(ret * point) / point;
     }
 
-    public void createDummy(UserInfoRepository userInfoRepository, ExerciseRepository exerciseRepository) {
-        for (int i = 0; i < 3000; ++i) {
-            generateManDummy(i, userInfoRepository, exerciseRepository);
-        }
+    public void dummyOnOff(){
+        onOff = 1 - onOff;
+    }
 
-        for (int i = 0; i < 3000; ++i) {
-            generateWomanDummy(i, userInfoRepository, exerciseRepository);
+    public void createDummy() {
+        if(onOff == 1){
+            for (int i = 0; i < 100; ++i) {
+                generateManDummy(count + i, userInfoRepository, exerciseRepository);
+            }
+
+            for (int i = 0; i < 100; ++i) {
+                generateWomanDummy(count + i, userInfoRepository, exerciseRepository);
+            }
+            count += 100;
         }
     }
 
     private void generateWomanDummy(int i, UserInfoRepository userInfoRepository, ExerciseRepository exerciseRepository) {
         double weight, bmi, fatMass, height, muscleMass;
-        int[][] benchScale = getFemaleBenchScale();
-        int[][] squatScale = getFemaleSquatScale();
-        int[][] deadScale = getFemaleDeadScale();
 
         do {
             height = generateRandomValueWithStdDev(womanHeightAverage, 15, 1);
             weight = generateRandomWeight(height, "여");
             bmi = calculateBmi(height, weight);
             fatMass = generateRandomFatMass(weight, "여");
-            muscleMass = generateRandomMuscleMass(weight, fatMass);
+            muscleMass = generateRandomMuscleMass(weight, fatMass, "여");
         } while (isOutlier(fatMass, muscleMass, weight, height, bmi, "여"));
 
         double bodyScore = Math.round(calculateBodyScore(height, weight, fatMass, "여"));
@@ -160,6 +195,9 @@ public class DummyUserDataCreator {
         generateRandomExercise(userInfo, "벤치프레스", "여", exerciseRepository);
         generateRandomExercise(userInfo, "데드리프트", "여", exerciseRepository);
         generateRandomExercise(userInfo, "스쿼트", "여", exerciseRepository);
+        generateRandomExercise(userInfo, "숄더프레스", "여", exerciseRepository);
+        generateRandomExercise(userInfo, "덤벨컬", "여", exerciseRepository);
+        generateRandomExercise(userInfo, "바벨컬", "여", exerciseRepository);
     }
 
     private void generateManDummy(int i, UserInfoRepository userInfoRepository, ExerciseRepository exerciseRepository) {
@@ -170,7 +208,7 @@ public class DummyUserDataCreator {
             weight = generateRandomWeight(height, "남");
             bmi = calculateBmi(height, weight);
             fatMass = generateRandomFatMass(weight, "남");
-            muscleMass = generateRandomMuscleMass(weight, fatMass);
+            muscleMass = generateRandomMuscleMass(weight, fatMass, "남");
         } while (isOutlier(fatMass, muscleMass, weight, height, bmi, "남"));
 
         double bodyScore = Math.round(calculateBodyScore(height, weight, fatMass, "남"));
@@ -193,6 +231,9 @@ public class DummyUserDataCreator {
         generateRandomExercise(userInfo, "벤치프레스", "남", exerciseRepository);
         generateRandomExercise(userInfo, "데드리프트", "남", exerciseRepository);
         generateRandomExercise(userInfo, "스쿼트", "남", exerciseRepository);
+        generateRandomExercise(userInfo, "숄더프레스", "남", exerciseRepository);
+        generateRandomExercise(userInfo, "덤벨컬", "남", exerciseRepository);
+        generateRandomExercise(userInfo, "바벨컬", "남", exerciseRepository);
     }
 
     private void generateRandomExercise(UserInfo userInfo, String exName, String sex, ExerciseRepository exerciseRepository) {
@@ -202,7 +243,7 @@ public class DummyUserDataCreator {
             int weight = (int) (userInfo.getWeight() / 5) - 10; // 몸무게별 구간갯수가 10개임
             double musclePer = userInfo.getMuscleMass() / userInfo.getWeight();
 
-            double dev = musclePer * 100 - muscleMassPercentAverage;
+            double dev = musclePer * 100 - manMuscleMassPercentAverage;
             double record = 0;
             switch (exName) {
                 case "벤치프레스":
@@ -215,6 +256,18 @@ public class DummyUserDataCreator {
                     break;
                 case "스쿼트":
                     record = generateRandomValueWithStdDev(scale(maleSquatScale[weight][0], maleSquatScale[weight][1],
+                            dev * 10), stdDev, 1);
+                    break;
+                case "숄더프레스":
+                    record = generateRandomValueWithStdDev(scale(maleShoulderScale[weight][0], maleShoulderScale[weight][1],
+                            dev * 10), stdDev, 1);
+                    break;
+                case "덤벨컬":
+                    record = generateRandomValueWithStdDev(scale(maleDumbbellScale[weight][0], maleDumbbellScale[weight][1],
+                            dev * 10), stdDev, 1);
+                    break;
+                case "바벨컬":
+                    record = generateRandomValueWithStdDev(scale(maleBarbellScale[weight][0], maleBarbellScale[weight][1],
                             dev * 10), stdDev, 1);
                     break;
             }
@@ -232,7 +285,7 @@ public class DummyUserDataCreator {
             int weight = (int) (userInfo.getWeight() / 5) - 8; // 몸무게별 구간갯수가 8개임
             double musclePer = userInfo.getMuscleMass() / userInfo.getWeight();
 
-            double dev = musclePer * 100 - muscleMassPercentAverage;
+            double dev = musclePer * 100 - womanMuscleMassPercentAverage;
             double record = 0;
             switch (exName) {
                 case "벤치프레스":
@@ -245,6 +298,18 @@ public class DummyUserDataCreator {
                     break;
                 case "스쿼트":
                     record = generateRandomValueWithStdDev(scale(femaleSquatScale[weight][0], femaleSquatScale[weight][1],
+                            dev * 10), stdDev, 1);
+                    break;
+                case "숄더프레스":
+                    record = generateRandomValueWithStdDev(scale(femaleShoulderScale[weight][0], femaleShoulderScale[weight][1],
+                            dev * 10), stdDev, 1);
+                    break;
+                case "덤벨컬":
+                    record = generateRandomValueWithStdDev(scale(femaleDumbbellScale[weight][0], femaleDumbbellScale[weight][1],
+                            dev * 10), stdDev, 1);
+                    break;
+                case "바벨컬":
+                    record = generateRandomValueWithStdDev(scale(femaleBarbellScale[weight][0], femaleBarbellScale[weight][1],
                             dev * 10), stdDev, 1);
                     break;
             }
@@ -285,7 +350,7 @@ public class DummyUserDataCreator {
         return Math.round(fatMass * 10.0) / 10.0;
     }
 
-    private double generateRandomMuscleMass(double weight, double fatmass) {
+    private double generateRandomMuscleMass(double weight, double fatmass, String sex) {
         // 낮은 체지방 기준
         double lowFat = 17;
 
@@ -293,9 +358,19 @@ public class DummyUserDataCreator {
         double point = scale(0, 8, (lowFat - (fatmass / weight) * 100) * 10);
 
         if (point == 0) {
-            weight = weight * generateRandomValueWithStdDev(muscleMassPercentAverage, 4, 2) / 100;
+            if(sex == "남"){
+                weight = weight * generateRandomValueWithStdDev(manMuscleMassPercentAverage, 4, 2) / 100;
+            }
+            else{
+                weight = weight * generateRandomValueWithStdDev(womanMuscleMassPercentAverage, 4, 2) / 100;
+            }
         } else {
-            weight = weight * generateRandomValueWithStdDev(muscleMassPercentAverage + point, 4, 2) / 100;
+            if (sex == "남"){
+                weight = weight * generateRandomValueWithStdDev(manMuscleMassPercentAverage + point, 4, 2) / 100;
+            }
+            else{
+                weight = weight * generateRandomValueWithStdDev(womanMuscleMassPercentAverage + point, 4, 2) / 100;
+            }
         }
 
         return Math.round(weight * 100.0) / 100.0;

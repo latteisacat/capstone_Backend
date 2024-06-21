@@ -1,6 +1,7 @@
 package com.example.capstone_backend.domain.home.service;
 
 
+import com.example.capstone_backend.domain.fileserver.ContentsRepository;
 import com.example.capstone_backend.domain.user.CompetitorRepository;
 import com.example.capstone_backend.domain.user.ExerciseRepository;
 import com.example.capstone_backend.domain.user.UserInfoRepository;
@@ -24,12 +25,13 @@ public class HomeReadService {
     final private UserInfoRepository userInfoRepository;
     final private ExerciseRepository exerciseRepository;
     final private CompetitorRepository competitorRepository;
+    final private ContentsRepository contentsRepository;
 
     public UserHomeResponseDTO getUserHome(final Long userId){
         UserInfo user = userInfoRepository.findById(userId).orElseThrow();
         List<Competitor> myCompetitors = competitorRepository.findAllByFromUserId(user);
         List<Exercise> myExerciseList = exerciseRepository.findAllByUser(user);
-
+        List<UserHomeResponseDTO.ShortForm> shortForms = contentsRepository.findAllVideos().stream().map(UserHomeResponseDTO.ShortForm::of).toList();
         // 이미 등록된 경쟁자를 리스트에서 제외하기 위함.
         List<Long> competitorIds = myCompetitors.stream().map(competitor -> competitor.getToUserId().getId()).toList();
         String sex = user.getSex();
@@ -37,8 +39,11 @@ public class HomeReadService {
         Long userCount = userInfoRepository.userCount(sex);
         Double percentageFat;
         Double userPercentage;
+        String strUserPercentage = null;
+
         if (user.getFatMass() != null){
             percentageFat = user.getFatMass() / user.getWeight() * 100;
+            percentageFat = Double.parseDouble(String.format("%.3f", percentageFat));
         }
         else{
             percentageFat = null;
@@ -47,6 +52,8 @@ public class HomeReadService {
         if (user.getBodyScore() != null){
             Long betterBodyScoreUserCount = userInfoRepository.getBetterBodyScoreUserCount(user.getBodyScore(), sex);
             userPercentage = (double) betterBodyScoreUserCount / userCount * 100;
+            userPercentage = Double.parseDouble(String.format("%.3f", userPercentage));
+            strUserPercentage = userPercentage + "%";
         }
         else{
             userPercentage = null;
@@ -60,18 +67,19 @@ public class HomeReadService {
         Double range = 0.15;
         Integer count = 0;
         List<UserHomeResponseDTO.RecommendedUser> recommendedUsers = new ArrayList<>();
-        if (userRecords.size() != 0){
-            do{
-                count += 1;
-                recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), range)
-                        .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
-                recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
-                System.out.println("사이즈 : " + recommendedUsers.size());
-                range += 0.05;
-            }while(recommendedUsers.size() == 0 && count < 5);
-        }
+        do{
+            count += 1;
+            recommendedUsers = userInfoRepository.getRecommendedUsers(user.getBodyScore(), sex, user.getId(), user.getHeight(), range)
+                    .stream().map(UserHomeResponseDTO.RecommendedUser::of).toList();
+            recommendedUsers = recommendedUsers.stream().filter(recommendedUser -> !competitorIds.contains(recommendedUser.userId())).toList();
+            System.out.println("사이즈 : " + recommendedUsers.size());
+            range += 0.05;
+        }while(recommendedUsers.size() == 0 && count < 2);
+
 
         List<UserCompetitorDTO> userCompetitorDTOList = getUserCompetitorDTOList(user, myCompetitors);
+        List<UserHomeResponseDTO.NullCompetitor> nullCompetitors = nullCompetitorList(user);
+
 
         return UserHomeResponseDTO.builder()
                 .userId(user.getId())
@@ -83,12 +91,61 @@ public class HomeReadService {
                 .muscleMass(user.getMuscleMass())
                 .bodyFat(user.getFatMass())
                 .percentageFat(percentageFat)
-                .userPercentage(userPercentage+"%")
+                .userPercentage(strUserPercentage)
                 .competitors(userCompetitorDTOList)
                 .userRecords(userRecords)
+                .contents(shortForms)
                 .graph(averageRecords)
+                .nullGraph(nullCompetitors)
                 .recommendedUsers(recommendedUsers)
                 .build();
+    }
+
+    private List<UserHomeResponseDTO.NullCompetitor> nullCompetitorList(UserInfo user) {
+        List<UserHomeResponseDTO.NullCompetitor> nullCompetitors = new ArrayList<>();
+        if(
+                user.getHeight()!= null &&
+                user.getWeight() != null &&
+                user.getMuscleMass() != null &&
+                user.getFatMass() != null &&
+                user.getBMI() != null
+        ){
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("키")
+                    .me(user.getHeight())
+                    .competitor(0.0)
+                    .build());
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("몸무게")
+                    .me(user.getWeight())
+                    .competitor(0.0)
+                    .build());
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("근육량")
+                    .me(user.getMuscleMass())
+                    .competitor(0.0)
+                    .build());
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("체지방량")
+                    .me(user.getFatMass())
+                    .competitor(0.0)
+                    .build());
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("BMI")
+                    .me(Double.parseDouble(String.format("%.3f", user.getBMI())))
+                    .competitor(0.0)
+                    .build());
+            Double percentageFat = null;
+            percentageFat = user.getFatMass() / user.getWeight() * 100;
+            percentageFat = Double.parseDouble(String.format("%.3f", percentageFat));
+
+            nullCompetitors.add(UserHomeResponseDTO.NullCompetitor.builder()
+                    .name("체지방률")
+                    .me(percentageFat)
+                    .competitor(0.0)
+                    .build());
+        }
+        return nullCompetitors;
     }
 
     private List<UserCompetitorDTO> getUserCompetitorDTOList(UserInfo user, List<Competitor> myCompetitors) {
@@ -99,10 +156,14 @@ public class HomeReadService {
             userCompare.add(UserCompetitorDTO.CompareDetail.of("몸무게", user.getWeight(), competitor.getToUserId().getWeight()));
             userCompare.add(UserCompetitorDTO.CompareDetail.of("근육량", user.getMuscleMass(), competitor.getToUserId().getMuscleMass()));
             userCompare.add(UserCompetitorDTO.CompareDetail.of("체지방량", user.getFatMass(), competitor.getToUserId().getFatMass()));
-            userCompare.add(UserCompetitorDTO.CompareDetail.of("BMI", user.getBMI(), competitor.getToUserId().getBMI()));
+            userCompare.add(UserCompetitorDTO.CompareDetail.of("BMI", Double.parseDouble(String.format("%.3f", user.getBMI())),
+                    Double.parseDouble(String.format("%.3f", competitor.getToUserId().getBMI()))
+                    ));
             userCompare.add(UserCompetitorDTO.CompareDetail.of(
-                    "체지방률", user.getFatMass() / user.getWeight() * 100,
-                    competitor.getToUserId().getFatMass() / competitor.getToUserId().getWeight() * 100));
+                    "체지방률",
+                    Double.parseDouble(String.format("%.3f", user.getFatMass() / user.getWeight() * 100)),
+                    Double.parseDouble(String.format("%.3f", competitor.getToUserId().getFatMass() / competitor.getToUserId().getWeight() * 100))
+            ));
             userCompetitorDTOList.add(UserCompetitorDTO.builder()
                             .userId(competitor.getToUserId().getId())
                             .userProfile(competitor.getToUserId().getUserProfile())
@@ -136,7 +197,7 @@ public class HomeReadService {
             userRecords.add(UserHomeResponseDTO.UserRecord.builder()
                             .sportName(exercise.getExerciseName())
                             .record(exercise.getRecord().toString() + "kg")
-                            .percentage(exercisePercentage + "%")
+                            .percentage(String.format("%.3f", exercisePercentage) + "%")
                     .build());
         }
         return userRecords;
